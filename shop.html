@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KRYTEX PREMIUM</title>
+    <title>KRYTEX PREMIUM KZT</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -25,7 +25,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Header */
         .header {
             padding: 20px;
             text-align: center;
@@ -35,7 +34,6 @@
 
         .header h1 { margin: 0; font-size: 24px; color: var(--accent-color); text-shadow: 0 0 10px rgba(0,212,255,0.5); }
 
-        /* Tabs */
         .tabs {
             display: flex; background: rgba(13, 22, 38, 0.98);
             position: sticky; top: 0; z-index: 1000;
@@ -45,12 +43,10 @@
         .tab.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
         .tab i { display: block; font-size: 18px; margin-bottom: 3px; }
 
-        /* Layout */
         .content-section { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Buttons */
         .btn-blue {
             background: linear-gradient(135deg, #0088ff, #00d4ff);
             color: #000; border: none; width: 100%; padding: 14px;
@@ -62,15 +58,13 @@
             border-radius: 10px; margin-bottom: 15px; font-size: 12px;
         }
 
-        /* Catalog Grid */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .item-card {
             background: var(--card-bg); border: 1px solid #1a2f4d;
-            padding: 15px; border-radius: 12px; text-align: center;
+            padding: 15px; border-radius: 12px; text-align: center; font-size: 13px;
         }
         .item-card:active { border-color: var(--accent-color); background: #101d33; }
 
-        /* Product Card */
         .product-card {
             background: var(--card-bg); border-radius: 15px;
             overflow: hidden; margin-bottom: 15px; border: 1px solid #1a2f4d;
@@ -80,7 +74,6 @@
         .product-title { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
         .product-price { color: var(--accent-color); font-weight: 800; font-size: 16px; }
 
-        /* Review Card */
         .review-card { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #1a2f4d; }
         .review-img { width: 100%; border-radius: 8px; margin-top: 10px; filter: brightness(0.8); }
     </style>
@@ -100,70 +93,41 @@
 
 <div id="catalog" class="content-section active">
     <div id="step-cities">
-        <h4 style="color: var(--text-dim)">📍 Выберите город:</h4>
-        <div class="grid">
-            <div class="item-card" onclick="goStep('districts', 'Алматы')">Алматы</div>
-            <div class="item-card" onclick="goStep('districts', 'Астана')">Астана</div>
-            <div class="item-card" onclick="goStep('districts', 'Караганда')">Караганда</div>
-            <div class="item-card" onclick="goStep('districts', 'Шымкент')">Шымкент</div>
-        </div>
+        <h4 style="color: var(--text-dim)">📍 Выберите город Казахстана:</h4>
+        <div class="grid" id="city-list"></div>
     </div>
 
     <div id="step-districts" style="display:none">
         <button class="btn-back" onclick="goStep('cities')"><i class="fa fa-arrow-left"></i> Назад к городам</button>
         <h4 id="selected-city-title" style="color: var(--accent-color)"></h4>
-        <div class="grid">
-            <div class="item-card" onclick="goStep('products', 'Медеуский')">Медеуский</div>
-            <div class="item-card" onclick="goStep('products', 'Алмалинский')">Алмалинский</div>
-            <div class="item-card" onclick="goStep('products', 'Бостандыкский')">Бостандыкский</div>
-        </div>
+        <div class="grid" id="district-list"></div>
     </div>
 
     <div id="step-products" style="display:none">
         <button class="btn-back" onclick="goStep('districts')"><i class="fa fa-arrow-left"></i> Назад к районам</button>
-        <div id="product-list">
-            <div class="product-card">
-                <div class="product-img"><i class="fa fa-image fa-2x"></i></div>
-                <div class="product-info">
-                    <span class="product-title">✨ МЕФ crystal VHQ 99% ✨ 1г</span>
-                    <span class="product-price">15 000 ₸</span>
-                    <button class="btn-blue" style="margin-top:10px" onclick="buyItem('МЕФ 1г', 15000)">КУПИТЬ</button>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-img"><i class="fa fa-image fa-2x"></i></div>
-                <div class="product-info">
-                    <span class="product-title">🌿 Шишки Amnesia 🌿 2г</span>
-                    <span class="product-price">22 000 ₸</span>
-                    <button class="btn-blue" style="margin-top:10px" onclick="buyItem('Шишки 2г', 22000)">КУПИТЬ</button>
-                </div>
-            </div>
-        </div>
+        <div id="product-list"></div>
     </div>
 </div>
 
 <div id="profile" class="content-section">
     <div class="review-card">
-        <h3 style="color: var(--accent-color); margin-top:0">МОЙ АККАУТ</h3>
-        <p>👤 ID: <span id="user-id" style="color: var(--success)">-</span></p>
+        <h3 style="color: var(--accent-color); margin-top:0">ЛИЧНЫЙ КАБИНЕТ</h3>
+        <p>👤 TG ID: <span id="user-id" style="color: var(--success)">-</span></p>
         <p>💰 Баланс: <span style="color: var(--success)">0 ₸</span></p>
-        <button class="btn-blue">ПОПОЛНИТЬ</button>
+        <p>💳 Статус: <span style="color: var(--accent-color)">Premium Client</span></p>
+        <button class="btn-blue" onclick="tg.showAlert('Пополнение временно через оператора')">ПОПОЛНИТЬ БАЛАНС</button>
     </div>
 </div>
 
 <div id="reviews" class="content-section">
-    <div class="review-card">
-        <b style="color: var(--accent-color)">User_4421</b> <span style="font-size:10px; color:var(--text-dim)">• вчера</span>
-        <p style="font-size:12px">Забрал в касание, место огонь! Крайтекс лучший.</p>
-        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="review-img" alt="Отзыв">
-    </div>
+    <div id="review-container"></div>
 </div>
 
 <div id="info" class="content-section">
     <div class="review-card">
-        <h4>ИНФОРМАЦИЯ</h4>
-        <p style="font-size:12px; color: var(--text-dim)">Работаем 24/7. По всем вопросам к оператору.</p>
-        <button class="btn-blue" onclick="window.open('https://t.me/krytex_kzz')">ОПЕРАТОР</button>
+        <h4>О МАГАЗИНЕ</h4>
+        <p style="font-size:12px; color: var(--text-dim)">KRYTEX — Лидер на рынке Казахстана. Работаем более 3 лет. Гарантия качества 100%.</p>
+        <button class="btn-blue" onclick="window.open('https://t.me/krytex_kzz')">СВЯЗЬ С ОПЕРАТОРОМ</button>
     </div>
 </div>
 
@@ -171,9 +135,56 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Подтяжка ID
+    // БАЗА ДАННЫХ КЗ
+    const data = {
+        "Алматы": ["Алмалинский", "Бостандыкский", "Медеуский", "Ауэзовский", "Жетысуский", "Турксибский"],
+        "Астана": ["Есильский", "Алматы", "Сарыарка", "Байконур", "Нура"],
+        "Шымкент": ["Абайский", "Аль-Фарабийский", "Енбекшинский", "Каратауский"],
+        "Караганда": ["им. Казыбек би", "Алихана Бокейхана"],
+        "Актобе": ["Район Астана", "Район Алматы"],
+        "Павлодар": ["Центральный", "Северный", "Дачный"],
+        "Усть-Каменогорск": ["Центр", "КШТ", "Ульбинский"]
+    };
+
+    const products = [
+        { name: "✨ МЕФ Crystal VHQ 99% ✨", weight: "1г", price: "15500", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200" },
+        { name: "✨ МЕФ Crystal VHQ 99% ✨", weight: "2г", price: "27000", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=200" },
+        { name: "🌿 Шишки Amnesia 🌿", weight: "2г", price: "23000", img: "https://images.unsplash.com/photo-1536531535458-7589d970e707?q=80&w=200" },
+        { name: "🍓 Ecstasy MiuMiu 🍓", weight: "3шт", price: "19500", img: "https://images.unsplash.com/photo-1611079830811-865ff4428d17?q=80&w=200" },
+        { name: "🍫 Гашиш Ice-o-Lator 🍫", weight: "1г", price: "14000", img: "https://images.unsplash.com/photo-1603903052089-e61f63051187?q=80&w=200" },
+        { name: "💍 A-PVP White 💍", weight: "1г", price: "14500", img: "https://images.unsplash.com/photo-15120706327b2-4a491e5e394b?q=80&w=200" }
+    ];
+
+    const reviews = [
+        { user: "Arman_KZ", text: "Всё чётко, Медеуский район — поднял в касание!", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400" },
+        { user: "Zhenis_77", text: "Астана на связи, Есильский курьеру респект.", img: "https://images.unsplash.com/photo-1550684848-86a5d8727436?w=400" }
+    ];
+
+    // ИНИЦИАЛИЗАЦИЯ
     if(tg.initDataUnsafe.user) {
         document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
+    }
+
+    function init() {
+        const cityGrid = document.getElementById('city-list');
+        Object.keys(data).forEach(city => {
+            const div = document.createElement('div');
+            div.className = 'item-card';
+            div.innerText = city;
+            div.onclick = () => goStep('districts', city);
+            cityGrid.appendChild(div);
+        });
+
+        const revCont = document.getElementById('review-container');
+        reviews.forEach(r => {
+            revCont.innerHTML += `
+                <div class="review-card">
+                    <b style="color: var(--accent-color)">${r.user}</b>
+                    <p style="font-size:12px">${r.text}</p>
+                    <img src="${r.img}" class="review-img">
+                </div>
+            `;
+        });
     }
 
     function showSection(id) {
@@ -189,22 +200,50 @@
         document.getElementById('step-products').style.display = 'none';
         
         if(step === 'cities') document.getElementById('step-cities').style.display = 'block';
+        
         if(step === 'districts') {
             document.getElementById('step-districts').style.display = 'block';
-            if(val) document.getElementById('selected-city-title').innerText = '📍 ' + val;
+            document.getElementById('selected-city-title').innerText = '📍 ' + val;
+            const distGrid = document.getElementById('district-list');
+            distGrid.innerHTML = '';
+            data[val].forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.innerText = d;
+                div.onclick = () => goStep('products', d);
+                distGrid.appendChild(div);
+            });
         }
-        if(step === 'products') document.getElementById('step-products').style.display = 'block';
+
+        if(step === 'products') {
+            document.getElementById('step-products').style.display = 'block';
+            const prodList = document.getElementById('product-list');
+            prodList.innerHTML = '';
+            products.forEach(p => {
+                prodList.innerHTML += `
+                    <div class="product-card">
+                        <img src="${p.img}" class="product-img" style="object-fit:cover">
+                        <div class="product-info">
+                            <span class="product-title">${p.name} ${p.weight}</span>
+                            <span class="product-price">${p.price} ₸</span>
+                            <button class="btn-blue" style="margin-top:10px" onclick="buyItem('${p.name}', '${p.price}')">КУПИТЬ</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
     }
 
     function buyItem(name, price) {
-        tg.showConfirm(`Купить ${name} за ${price} ₸?`, (ok) => {
+        tg.showConfirm(`Оформить заказ: ${name} за ${price} ₸?`, (ok) => {
             if(ok) {
                 tg.sendData(`order:${name}:${price}`);
                 tg.close();
             }
         });
     }
-</script>
 
+    init();
+</script>
 </body>
 </html>
