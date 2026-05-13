@@ -2,75 +2,162 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRYTEX SHOP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MIUMIU SHOP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #0f0a12;
+            --card-bg: #1a141f;
+            --accent-color: #ff2d78;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117;
-            color: #ffffff;
-            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Шапка */
+        .header {
             padding: 20px;
-        }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #00d4ff; font-size: 24px; text-transform: uppercase; }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 15px;
             text-align: center;
-            transition: 0.3s;
+            background: linear-gradient(180deg, #1e1326 0%, var(--bg-color) 100%);
         }
-        .card:active { transform: scale(0.95); border-color: #00d4ff; }
-        .price { color: #00d4ff; font-weight: bold; margin: 10px 0; display: block; }
-        
-        .buy-btn {
-            background: #00d4ff;
-            color: #000;
-            border: none;
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            font-weight: bold;
+
+        .header img { width: 80px; border-radius: 50%; border: 2px solid var(--accent-color); }
+
+        /* Навигация (вкладки) */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: var(--card-bg);
+            padding: 10px 0;
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid #332a3d;
         }
+
+        .tab { color: var(--text-dim); font-size: 12px; text-align: center; flex: 1; cursor: pointer; }
+        .tab.active { color: var(--accent-color); }
+        .tab i { display: block; font-size: 18px; margin-bottom: 4px; }
+
+        /* Контент */
+        .content-section { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Кнопки и Карточки */
+        .btn-large {
+            background: linear-gradient(90deg, #ff2d78, #ff5e9e);
+            color: white; border: none; width: 100%;
+            padding: 15px; border-radius: 12px;
+            font-weight: bold; margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px; padding: 15px;
+            margin-bottom: 15px; border: 1px solid #2d2436;
+        }
+
+        .city-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .city-item {
+            background: #251c2d; padding: 12px;
+            border-radius: 10px; text-align: center;
+            font-size: 14px; border: 1px solid #3d2f4a;
+        }
+
+        /* Инпуты */
+        input, textarea {
+            width: 100%; background: #251c2d;
+            border: 1px solid #3d2f4a; color: white;
+            padding: 12px; border-radius: 10px; margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .review-img { width: 100%; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h1>💎 KRYTEX SHOP 💎</h1>
+        <h2 style="margin: 0; color: var(--accent-color);">MIUMIU</h2>
+        <p style="font-size: 12px; color: var(--text-dim);">витрина mini app 24/7</p>
+        <button class="btn-large" onclick="openTab('support')">ОПЕРАТОР</button>
     </div>
 
-    <div class="product-grid">
-        <div class="card" onclick="buy('МЕФ VHQ 1г', 15000)">
-            <strong>МЕФ VHQ</strong>
-            <span class="price">15 000 ₸</span>
-            <button class="buy-btn">В корзину</button>
+    <div class="tabs">
+        <div class="tab active" onclick="openTab('shop')"><i class="fa fa-shopping-bag"></i>Шоп</div>
+        <div class="tab" onclick="openTab('profile')"><i class="fa fa-user"></i>Профиль</div>
+        <div class="tab" onclick="openTab('reviews')"><i class="fa fa-star"></i>Отзывы</div>
+        <div class="tab" onclick="openTab('rules')"><i class="fa fa-book"></i>Инфо</div>
+    </div>
+
+    <div id="shop" class="content-section active">
+        <h3 style="text-align:center">Выберите город</h3>
+        <input type="text" placeholder="Поиск по городу...">
+        <div class="city-grid">
+            <div class="city-item" onclick="selectCity('Алматы')">Алматы</div>
+            <div class="city-item" onclick="selectCity('Астана')">Астана</div>
+            <div class="city-item" onclick="selectCity('Шымкент')">Шымкент</div>
+            <div class="city-item" onclick="selectCity('Караганда')">Караганда</div>
         </div>
-        <div class="card" onclick="buy('Шишки 1г', 12500)">
-            <strong>Шишки</strong>
-            <span class="price">12 500 ₸</span>
-            <button class="buy-btn">В корзину</button>
+    </div>
+
+    <div id="profile" class="content-section">
+        <div class="card">
+            <p>👤 <b>ID:</b> <span id="user-id">Загрузка...</span></p>
+            <p>💰 <b>Баланс:</b> 0 ₸</p>
+            <p>📦 <b>Заказов:</b> 0 шт.</p>
+            <button class="btn-large" style="padding: 8px;">Пополнить</button>
         </div>
-        <!-- Можно добавить остальные товары по аналогии -->
+    </div>
+
+    <div id="reviews" class="content-section">
+        <div class="card">
+            <div style="color: gold;"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+            <p style="font-size: 13px; margin: 5px 0;">"Все четко на месте, позиция свежая, как обычно ровно!"</p>
+            <img src="https://via.placeholder.com/300x150/251c2d/ff2d78?text=PHOTO+REPORT" class="review-img">
+        </div>
+    </div>
+
+    <div id="rules" class="content-section">
+        <div class="card">
+            <h4>Правила магазина</h4>
+            <p style="font-size: 12px; color: var(--text-dim);">1. Оплачивая заказ, вы соглашаетесь с правилами...<br><br>2. Поддержка работает 24/7...</p>
+        </div>
+    </div>
+
+    <div id="support" class="content-section">
+        <h3>Связь с оператором</h3>
+        <textarea rows="5" placeholder="Опишите проблему..."></textarea>
+        <button class="btn-large">Отправить</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.setText("ЗАКРЫТЬ МАГАЗИН");
-        tg.MainButton.show();
-        tg.MainButton.onClick(() => tg.close());
+        document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
 
-        function buy(name, price) {
-            tg.sendData(`buy:${name}:${price}`);
+        function openTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function selectCity(city) {
+            tg.showConfirm(`Вы выбрали город ${city}. Перейти к товарам?`, (ok) => {
+                if(ok) tg.sendData(`city_selected:${city}`);
+            });
         }
     </script>
 </body>
