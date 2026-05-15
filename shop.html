@@ -21,8 +21,19 @@
         .btn-buy { background: var(--blue); color: black; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
         .pay-window { background: #150f1d; border: 2px dashed var(--blue); padding: 20px; border-radius: 20px; text-align: center; }
         .wallet { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2438; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #120d1a; display: flex; padding: 12px 0; border-top: 1px solid #2d2438; }
-        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; }
+        
+        /* Стили отзывов */
+        .review-card { background: var(--card); border: 1px solid #2d2438; border-radius: 18px; padding: 15px; margin-bottom: 15px; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .review-user { font-weight: bold; color: var(--blue); font-size: 14px; }
+        .review-stars { color: #ffca28; font-size: 12px; }
+        .review-text { font-size: 13px; color: #e1def2; margin: 8px 0; line-height: 1.4; }
+        .review-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid #2d2438; margin-top: 8px; }
+        .review-meta { font-size: 11px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 5px; }
+
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #120d1a; display: flex; padding: 12px 0; border-top: 1px solid #2d2438; z-index: 1000; }
+        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; }
         .nav-link.active { color: var(--accent); }
         .nav-link i { display: block; font-size: 20px; margin-bottom: 4px; }
         .hidden { display: none; }
@@ -30,6 +41,7 @@
 </head>
 <body>
     <div class="header"><button class="btn-op" onclick="tg.openTelegramLink('https://t.me/krytex_kzz')">СВЯЗЬ С ОПЕРАТОРОМ</button></div>
+    
     <div class="container">
         <div id="shop-view">
             <div id="step-1"><h2>ЛОКАЦИЯ</h2><p style="color:var(--dim); font-size:12px;">Выберите город КЗ:</p><div class="grid" id="city-list"></div></div>
@@ -40,10 +52,38 @@
                 <button class="btn-op" style="margin-top:20px; background:var(--success); color:black;" onclick="finish()">Я ОПЛАТИЛ</button>
             </div>
         </div>
-        <div id="prof-view" class="hidden"><h2>ПРОФИЛЬ</h2><div class="card-item" style="width:100%; text-align:left;">ID: <span id="u-id"></span><br>Статус: Premium</div></div>
+
+        <div id="prof-view" class="hidden">
+            <h2>МОЙ АККАУНТ</h2>
+            <p style="color:var(--dim); font-size:12px; margin-bottom:20px;">Информация о вашем профиле KRYTEX</p>
+            <div class="prod-card" style="padding: 20px;">
+                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                    <div style="background:#231a34; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--blue)">
+                        <i class="fa fa-user-shield" style="color:var(--blue); font-size:20px;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div>
+                        <div style="font-size:12px; color:var(--success);">● Premium Client</div>
+                    </div>
+                </div>
+                <hr style="border:none; border-top:1px solid #2d2438; margin:15px 0;">
+                <p style="margin:8px 0; font-size:14px;">🆔 <b>Telegram ID:</b> <span id="u-id" style="color:var(--blue)">N/A</span></p>
+                <p style="margin:8px 0; font-size:14px;">💰 <b>Баланс:</b> <span style="color:var(--success)">0 ₸</span></p>
+                <p style="margin:8px 0; font-size:14px;">📦 <b>Всего покупок:</b> 0 шт.</p>
+                <button class="btn-buy" style="width:100%; margin-top:15px; padding:12px;" onclick="tg.showAlert('Пополнение баланса временно доступно только через оператора!')">ПОПОЛНИТЬ БАЛАНС</button>
+            </div>
+        </div>
+
+        <div id="reviews-view" class="hidden">
+            <h2>ОТЗЫВЫ НАШИХ КЛИЕНТОВ</h2>
+            <p style="color:var(--dim); font-size:12px; margin-bottom:20px;">Реальные отзывы с фотоотчетами из разных городов Казахстана</p>
+            <div id="reviews-list"></div>
+        </div>
     </div>
+
     <div class="nav">
         <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-shopping-bag"></i>МАРКЕТ</div>
+        <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-comment-dots"></i>ОТЗЫВЫ</div>
         <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-user"></i>АККАУНТ</div>
     </div>
 
@@ -57,15 +97,54 @@
             "Актобе": ["Старый город", "11-12 мкр"]
         };
         const prods = [{n:"❄️ МЕФ Crystal VHQ", p:"15500", w:"1г"}, {n:"🍀 Шишки AK-47", p:"23000", w:"2г"}, {n:"🍓 Ecstasy", p:"18000", w:"2шт"}];
+        
+        // Массив с отзывами
+        const fakeReviews = [
+            { u: "daniyar_99", r: "Алматы / Медеуский", t: "Забрал в касание! Место просто идеальное, курьер — ювелир. Качество кристаллов пушка, Krytex как всегда на высоте! Буду брать еще.", s: 5, i: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400" },
+            { u: "astana_king", r: "Астана / Есильский", t: "Шишки огонь, пахнут за километр. Снял в один клик без лишних глаз. Спасибо за ровный стафф в столице!", s: 5, i: "https://images.unsplash.com/photo-1536531535458-7589d970e707?q=80&w=400" },
+            { u: "karaganda_reshaet", r: "Караганда / Юго-Восток", t: "Экстази MiuMiu зашли на ура. Прикоп надежный, описание четкое, фотка понятная. Магазину 10 из 10.", s: 5, i: "https://images.unsplash.com/photo-1611079830811-865ff4428d17?q=80&w=400" },
+            { u: "shym_777", r: "Шымкент / Абайский", t: "Кристалл чистейший, вес даже чуть больше заявленного, приятно удивлен. Куре отдельный респект за быстрый подъем.", s: 5, i: "https://images.unsplash.com/photo-15120706327b2-4a491e5e394b?q=80&w=400" }
+        ];
+
         let order = {};
+        
         function init() {
             const cl = document.getElementById('city-list');
             Object.keys(data).forEach(c => {
                 let d = document.createElement('div'); d.className='card-item'; d.innerText=c;
                 d.onclick=()=>{ order.c=c; showStep(2); }; cl.appendChild(d);
             });
-            document.getElementById('u-id').innerText = tg.initDataUnsafe.user?.id || "N/A";
+            
+            // Подгружаем инфу юзера из ТГ
+            if (tg.initDataUnsafe.user) {
+                document.getElementById('u-id').innerText = tg.initDataUnsafe.user.id;
+                if(tg.initDataUnsafe.user.username) {
+                    document.getElementById('u-name').innerText = "@" + tg.initDataUnsafe.user.username;
+                } else {
+                    document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+                }
+            }
+
+            // Рендерим отзывы
+            const rl = document.getElementById('reviews-list');
+            fakeReviews.forEach(rev => {
+                rl.innerHTML += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-user">@${rev.u}</span>
+                            <span class="review-stars">${"★".repeat(rev.s)}</span>
+                        </div>
+                        <div class="review-text">${rev.t}</div>
+                        <img src="${rev.i}" class="review-img">
+                        <div class="review-meta">
+                            <span>📍 ${rev.r}</span>
+                            <span>Вчера, 19:42</span>
+                        </div>
+                    </div>
+                `;
+            });
         }
+
         function showStep(s) {
             [1,2,3,4].forEach(x => document.getElementById('step-'+x).classList.add('hidden'));
             document.getElementById('step-'+s).classList.remove('hidden');
@@ -87,8 +166,11 @@
         }
         function setPay(n,p) { order.n=n; order.p=p; showStep(4); document.getElementById('pay-name').innerText=n; document.getElementById('pay-sum').innerText=p+' ₸'; }
         function finish() { tg.sendData(`DONE|${order.c}|${order.r}|${order.n}|${order.p}`); tg.close(); }
+        
         function switchView(v, el) {
-            document.getElementById('shop-view').classList.add('hidden'); document.getElementById('prof-view').classList.add('hidden');
+            document.getElementById('shop-view').classList.add('hidden'); 
+            document.getElementById('prof-view').classList.add('hidden');
+            document.getElementById('reviews-view').classList.add('hidden');
             document.getElementById(v+'-view').classList.remove('hidden');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); el.classList.add('active');
         }
