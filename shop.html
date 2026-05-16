@@ -276,7 +276,7 @@
         function loadLiveReviews() {
             const rl = document.getElementById('reviews-list');
             rl.innerHTML = '';
-            fetch('http://localhost:8080/api/reviews')
+            fetch('http://5.180.183.22:8080/api/reviews')
                 .then(res => res.json())
                 .then(revs => renderReviewsList(revs))
                 .catch(() => renderReviewsList(defaultReviews));
