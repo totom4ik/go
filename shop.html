@@ -1,182 +1,147 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KRYTEX PREMIUM</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --bg: #08050a; --card: #120d1a; --accent: #ff2d78; --blue: #00d4ff; --text: #ffffff; --dim: #9b94a7; --success: #00ffa3; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .header { position: sticky; top: 0; z-index: 1000; background: rgba(8, 5, 10, 0.95); backdrop-filter: blur(10px); padding: 15px; border-bottom: 1px solid #2d2438; text-align: center; }
-        .btn-op { background: linear-gradient(90deg, var(--accent), #ff5e9e); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; text-transform: uppercase; box-shadow: 0 0 20px rgba(255, 45, 120, 0.4); }
-        .container { padding: 15px; padding-bottom: 100px; }
-        h2 { font-size: 20px; color: var(--blue); margin-bottom: 5px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .card-item { background: var(--card); border: 1px solid #2d2438; padding: 20px 10px; border-radius: 16px; text-align: center; transition: 0.2s; font-weight: 600; }
-        .card-item:active { border-color: var(--accent); transform: scale(0.95); }
-        .prod-card { background: var(--card); border-radius: 18px; border: 1px solid #2d2438; margin-bottom: 12px; padding: 15px; }
-        .prod-price { color: var(--accent); font-size: 18px; font-weight: 800; }
-        .btn-buy { background: var(--blue); color: black; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
-        .pay-window { background: #150f1d; border: 2px dashed var(--blue); padding: 20px; border-radius: 20px; text-align: center; }
-        .wallet { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2438; font-size: 15px; }
-        
-        /* Отзывы */
-        .review-card { background: var(--card); border: 1px solid #2d2438; border-radius: 18px; padding: 15px; margin-bottom: 15px; }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .review-user { font-weight: bold; color: var(--blue); font-size: 14px; }
-        .review-stars { color: #ffca28; font-size: 12px; }
-        .review-text { font-size: 13px; color: #e1def2; margin: 8px 0; line-height: 1.4; }
-        .review-img { width: 100%; height: 190px; object-fit: cover; border-radius: 12px; border: 1px solid #2d2438; margin-top: 8px; background: #150f1d; }
-        .review-meta { font-size: 11px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 7px; }
+import asyncio
+import logging
+import json
+import os
+from aiogram import Bot, Dispatcher, F, types
+from aiogram.filters import CommandStart, Command
+from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton
+from aiohttp import web
 
-        /* Меню навигации */
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #120d1a; display: flex; padding: 12px 0; border-top: 1px solid #2d2438; z-index: 1000; }
-        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; }
-        .nav-link.active { color: var(--accent); }
-        .nav-link i { display: block; font-size: 20px; margin-bottom: 4px; }
-        .hidden { display: none; }
-    </style>
-</head>
-<body>
-    <div class="header"><button class="btn-op" onclick="tg.openTelegramLink('https://t.me/krytex_kzz')">СВЯЗЬ С ОПЕРАТОРОМ</button></div>
+# --- КОНФИГ ---
+TOKEN = "8781354920:AAFffLfLFuzTDrDnhTwjAiPMUw3GXK2wQVo"  # Твой рабочий токен бота
+ADMIN_IDS = [5137164323, 5521361817]  # Ты и твой браточек (логи и чеки летят обоим)
+SHOP_URL = "https://totom4ik.github.io/go/shop.html?v=300"
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+REVIEWS_FILE = "live_reviews.json"
+
+if not os.path.exists(REVIEWS_FILE):
+    with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+
+def load_reviews():
+    with open(REVIEWS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_review(review_data):
+    reviews = load_reviews()
+    reviews.insert(0, review_data)
+    with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
+        json.dump(reviews, f, ensure_ascii=False, indent=4)
+
+def main_kb():
+    kb = [[KeyboardButton(text="🔱 КАТАЛОГ ЦАРСТВО АИДА 🔱", web_app=WebAppInfo(url=SHOP_URL))]]
+    return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    await message.answer(
+        f"🔱 Добро пожаловать в <b>Царство Аида</b>, {message.from_user.first_name}!\n\n"
+        "Самый ровный стафф по всему Казахстану и Таиланду.\n\n"
+        "⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Не пишите операторам не по делу. Спам реквизитами — бан.\n\n"
+        "Нажмите на кнопку ниже для открытия витрины:", 
+        reply_markup=main_kb(), parse_mode="HTML"
+    )
+
+# ЛОВИМ ЛОГИ И ЗАКАЗЫ ИЗ WEBAPP
+@dp.message(F.web_app_data)
+async def web_app_handler(message: Message):
+    raw_data = message.web_app_data.data
+    user = message.from_user
+    username = f"@{user.username}" if user.username else user.first_name
     
-    <div class="container">
-        <div id="shop-view">
-            <div id="step-1"><h2>ЛОКАЦИЯ</h2><p style="color:var(--dim); font-size:12px;">Выберите город КЗ:</p><div class="grid" id="city-list"></div></div>
-            <div id="step-2" class="hidden"><button onclick="showStep(1)" style="background:none; color:var(--blue); border:none; margin-bottom:10px;">← Назад</button><h2 id="t-city"></h2><div class="grid" id="dist-list"></div></div>
-            <div id="step-3" class="hidden"><button onclick="showStep(2)" style="background:none; color:var(--blue); border:none; margin-bottom:10px;">← Назад</button><h2 id="t-dist"></h2><div id="prod-list"></div></div>
-            <div id="step-4" class="hidden">
-                <div class="pay-window"><h3>ОПЛАТА ЗАКАЗА</h3><p id="pay-name" style="font-size:13px;"></p><div class="prod-price" id="pay-sum"></div><div class="wallet">4400 1234 5678 9012</div><p style="font-size:11px; color:var(--dim)">Переведите точную сумму на карту и нажмите кнопку ниже</p></div>
-                <button class="btn-op" style="margin-top:20px; background:var(--success); color:black;" onclick="finish()">Я ОПЛАТИЛ</button>
-            </div>
-        </div>
+    # 1. ОБРАБОТКА ИНЛАЙН-ЛОГОВ (ОТСЛЕЖИВАНИЕ ДЕЙСТВИЙ)
+    if raw_data.startswith("LOG|"):
+        log_text = raw_data.split("|")[1]
+        for admin_id in ADMIN_IDS:
+            try:
+                await bot.send_message(admin_id, f"👁 <b>[ЛОГ] Клиент {username} (ID: {user.id}):</b>\n→ {log_text}", parse_mode="HTML")
+            except Exception:
+                pass
 
-        <div id="prof-view" class="hidden">
-            <h2>МОЙ АККАУНТ</h2>
-            <p style="color:var(--dim); font-size:12px; margin-bottom:20px;">Информация о вашей учетной записи</p>
-            <div class="prod-card" style="padding: 20px;">
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                    <div style="background:#231a34; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--blue)">
-                        <i class="fa fa-user-shield" style="color:var(--blue); font-size:20px;"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:bold; font-size:16px;" id="u-name">Клиент</div>
-                        <div style="font-size:12px; color:var(--success);">● Premium User</div>
-                    </div>
-                </div>
-                <hr style="border:none; border-top:1px solid #2d2438; margin:15px 0;">
-                <p style="margin:8px 0; font-size:14px;">🆔 <b>ID Личного Кабинета:</b> <span id="u-id" style="color:var(--blue)">N/A</span></p>
-                <p style="margin:8px 0; font-size:14px;">💰 <b>Доступный Баланс:</b> <span style="color:var(--success)">0 ₸</span></p>
-                <p style="margin:8px 0; font-size:14px;">📦 <b>Успешных сделок:</b> 0 шт.</p>
-                <button class="btn-buy" style="width:100%; margin-top:15px; padding:12px;" onclick="tg.showAlert('Пополнение через приложение временно отключено. Напишите оператору!')">ПОПОЛНИТЬ БАЛАНС</button>
-            </div>
-        </div>
-
-        <div id="reviews-view" class="hidden">
-            <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
-            <p style="color:var(--dim); font-size:12px; margin-bottom:20px;">Свежие фотоотчеты с мест от наших покупателей</p>
-            <div id="reviews-list"></div>
-        </div>
-    </div>
-
-    <div class="nav">
-        <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-shopping-bag"></i>МАРКЕТ</div>
-        <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-comment-dots"></i>ОТЗЫВЫ</div>
-        <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-user"></i>ПРОФИЛЬ</div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp; tg.expand();
+    # 2. ОБРАБОТКА СФОРМИРОВАННОГО ЗАКАЗА
+    elif raw_data.startswith("DONE|"):
+        _, city, district, product, price = raw_data.split("|")
         
-        const data = {
-            "Алматы": ["Алмалинский", "Медеуский", "Бостандыкский", "Ауэзовский"],
-            "Астана": ["Есильский", "Сарыарка", "Алматы", "Байконур"],
-            "Караганда": ["Казыбек Би", "Майкудук", "Юго-Восток"],
-            "Шымкент": ["Абайский", "Аль-Фараби"],
-            "Актобе": ["Старый город", "11-12 мкр"]
-        };
-        const prods = [{n:"❄️ МЕФ Crystal VHQ", p:"15500", w:"1г"}, {n:"🍀 Шишки AK-47", p:"23000", w:"2г"}, {n:"🍓 Ecstasy", p:"18000", w:"2шт"}];
+        await message.answer(
+            f"📥 <b>ВАШ ЗАКАЗ СФОРМИРОВАН!</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"📍 Город: {city}\n"
+            f"🏘 Район: {district}\n"
+            f"📦 Товар: {product}\n"
+            f"💰 К оплате: <b>{price}</b>\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"👉 <b>ПОСЛЕДНИЙ ШАГ:</b> Отправьте скриншот чека об оплате прямо сюда в чат!",
+            parse_mode="HTML"
+        )
         
-        // ==========================================
-        //  СЮДА КЛАДИ СВОИ ССЫЛКИ НА ФОТО И ОТЗЫВЫ
-        // ==========================================
-        const fakeReviews = [
-            { u: "kzt_buyer", r: "Алматы / Бостандыкский", t: "Кристаллы просто пушка! Место тихое, забрал в касание, куре респект за четкий ориентир. Магазину процветания!", s: 5, i: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=400" },
-            { u: "asulan_ast", r: "Астана / Есильский", t: "Шишки лютые, пахнут как надо. Подъем легкий, без лишних глаз. Сервис топ!", s: 5, i: "https://images.unsplash.com/photo-1536531535458-7589d970e707?q=80&w=400" },
-            { u: "krg_09", r: "Караганда / Казыбек Би", t: "Крайтэкс держит марку. Все по весу, качество огонь, описание огонь. Рекомендую всем местным.", s: 5, i: "https://images.unsplash.com/photo-1611079830811-865ff4428d17?q=80&w=400" },
-            { u: "shym_bro", r: "Шымкент / Аль-Фараби", t: "Забрал легко, стафф чистый, прет как надо. Будем обращаться постоянно.", s: 5, i: "https://images.unsplash.com/photo-15120706327b2-4a491e5e394b?q=80&w=400" }
-        ];
+        for admin_id in ADMIN_IDS:
+            try:
+                await bot.send_message(admin_id, 
+                    f"🚨 <b>НОВЫЙ ЗАКАЗ НА РЕКВИЗИТЫ!</b>\n"
+                    f"👤 Юзер: {username} (ID: <code>{user.id}</code>)\n"
+                    f"🏙 Локация: {city} | {district}\n"
+                    f"🎁 Товар: {product} ({price})\n"
+                    f"⏳ Ожидаем скриншот чека...", parse_mode="HTML")
+            except Exception:
+                pass
 
-        let order = {};
+# АДМИНСКАЯ КОМАНДА ДЛЯ ДОБАВЛЕНИЯ ОТЗЫВА
+@dp.message(Command("add_review"), F.from_user.id.in_(ADMIN_IDS))
+async def cmd_review_help(message: Message):
+    await message.answer(
+        "📝 <b>Инструкция для загрузки отзывов:</b>\n\n"
+        "Кидай боту фото товара, а в подписи (описании к фото) пиши:\n"
+        "<code>Отзыв | Юзернейм | Локация | Текст</code>\n\n"
+        "<i>Пример:</i>\n"
+        "<code>Отзыв | arman_krg | Караганда / Юго-Восток | Мефчик огонь, забрал за секунду</code>",
+        parse_mode="HTML"
+    )
+
+# ПРИЕМ ОТЗЫВА ОТ АДМИНОВ
+@dp.message(F.photo, F.caption.startswith("Отзыв |"), F.from_user.id.in_(ADMIN_IDS))
+async def process_new_review(message: Message):
+    try:
+        parts = [p.strip() for p in message.caption.split("|")]
+        username, location, text = parts[1], parts[2], parts[3]
         
-        function init() {
-            const cl = document.getElementById('city-list');
-            Object.keys(data).forEach(c => {
-                let d = document.createElement('div'); d.className='card-item'; d.innerText=c;
-                d.onclick=()=>{ order.c=c; showStep(2); }; cl.appendChild(d);
-            });
-            
-            if (tg.initDataUnsafe.user) {
-                document.getElementById('u-id').innerText = tg.initDataUnsafe.user.id;
-                if(tg.initDataUnsafe.user.username) {
-                    document.getElementById('u-name').innerText = "@" + tg.initDataUnsafe.user.username;
-                } else {
-                    document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
-                }
-            }
-
-            // Автоматический рендер отзывов из массива выше
-            const rl = document.getElementById('reviews-list');
-            fakeReviews.forEach(rev => {
-                rl.innerHTML += `
-                    <div class="review-card">
-                        <div class="review-header">
-                            <span class="review-user">@${rev.u}</span>
-                            <span class="review-stars">${"★".repeat(rev.s)}</span>
-                        </div>
-                        <div class="review-text">${rev.t}</div>
-                        <img src="${rev.i}" class="review-img" alt="фото товара">
-                        <div class="review-meta">
-                            <span>📍 ${rev.r}</span>
-                            <span>Вчера, 21:15</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function showStep(s) {
-            [1,2,3,4].forEach(x => document.getElementById('step-'+x).classList.add('hidden'));
-            document.getElementById('step-'+s).classList.remove('hidden');
-            if(s==2) {
-                document.getElementById('t-city').innerText = order.c;
-                const dl = document.getElementById('dist-list'); dl.innerHTML='';
-                data[order.c].forEach(r => {
-                    let d = document.createElement('div'); d.className='card-item'; d.innerText=r;
-                    d.onclick=()=>{ order.r=r; showStep(3); }; dl.appendChild(d);
-                });
-            }
-            if(s==3) {
-                document.getElementById('t-dist').innerText = order.r;
-                const pl = document.getElementById('prod-list'); pl.innerHTML='';
-                prods.forEach(p => {
-                    pl.innerHTML += `<div class="prod-card"><b>${p.n}</b> (${p.w})<br><br><div style="display:flex; justify-content:space-between; align-items:center;"><span class="prod-price">${p.p} ₸</span><button class="btn-buy" onclick="setPay('${p.n}','${p.p}')">КУПИТЬ</button></div></div>`;
-                });
-            }
-        }
-        function setPay(n,p) { order.n=n; order.p=p; showStep(4); document.getElementById('pay-name').innerText=n; document.getElementById('pay-sum').innerText=p+' ₸'; }
-        function finish() { tg.sendData(`DONE|${order.c}|${order.r}|${order.n}|${order.p}`); tg.close(); }
+        photo_file = await bot.get_file(message.photo[-1].file_id)
+        photo_url = f"https://api.telegram.org/file/bot{TOKEN}/{photo_file.file_path}"
         
-        function switchView(v, el) {
-            document.getElementById('shop-view').classList.add('hidden'); 
-            document.getElementById('prof-view').classList.add('hidden');
-            document.getElementById('reviews-view').classList.add('hidden');
-            document.getElementById(v+'-view').classList.remove('hidden');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); el.classList.add('active');
-        }
-        init();
-    </script>
-</body>
-</html>
+        save_review({"u": username, "r": location, "t": text, "s": 5, "i": photo_url})
+        await message.answer(f"✅ Отзыв для @{username} успешно улетел на сайт!")
+    except Exception as e:
+        await message.answer(f"❌ Ошибка: {e}")
+
+# ПРИЕМ СКРИНШОТОВ ЧЕКОВ ОТ ЮЗЕРОВ
+@dp.message(F.photo)
+async def check_handler(message: Message):
+    await message.answer("✅ <b>Чек получен и отправлен на модерацию.</b>\nКоординаты/клад будут выданы в течение 5-15 минут после проверки оператором.")
+    
+    username = f"@{message.from_user.username}" if message.from_user.username else message.from_user.first_name
+    for admin_id in ADMIN_IDS:
+        try:
+            await bot.send_message(admin_id, f"📸 <b>ЧЕК ОТ КЛИЕНТА {username} (ID: <code>{message.from_user.id}</code>):</b>", parse_mode="HTML")
+            await message.copy_to(admin_id)
+        except Exception:
+            pass
+
+# API СЕРВЕР ОТЗЫВОВ ДЛЯ САЙТА
+async def handle_get_reviews(request):
+    return web.json_response(load_reviews(), headers={"Access-Control-Allow-Origin": "*"})
+
+async def start_server():
+    app = web.Application()
+    app.router.add_get('/api/reviews', handle_get_reviews)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    await web.TCPSite(runner, '0.0.0.0', 8080).start()
+
+async def main():
+    asyncio.create_task(start_server())
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    asyncio.run(main())
