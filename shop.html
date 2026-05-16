@@ -69,11 +69,11 @@
                     </div>
                     <div>
                         <div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div>
-                        <div style="font-size:12px; color:var(--success);">● Царство Аида Premium</div>
+                        <div style="font-size:12px; color:var(--success);">● Царство Аида Премиум</div>
                     </div>
                 </div>
                 <hr style="border:none; border-top:1px solid #2d2144; margin:15px 0;">
-                <p style="margin:8px 0; font-size:13px;">🆔 <b>ID Профиля:</b> <span id="u-id" style="color:var(--blue)">N/A</span></p>
+                <p style="margin:8px 0; font-size:13px;">🆔 <b>ID Профиля:</b> <span id="u-id" style="color:var(--blue)">Не определен</span></p>
                 <p style="margin:8px 0; font-size:13px;">💰 <b>Баланс:</b> <span style="color:var(--success)">0 ₸</span></p>
                 <p style="margin:8px 0; font-size:13px;">📦 <b>Покупок совершено:</b> 0 шт.</p>
             </div>
@@ -81,7 +81,7 @@
 
         <div id="reviews-view" class="hidden">
             <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
-            <p style="color:var(--dim); font-size:11px; margin-bottom:15px;">Реальные отзывы из бота</p>
+            <p style="color:var(--dim); font-size:11px; margin-bottom:15px;">Реальные отзывы покупателей</p>
             <div id="reviews-list"></div>
         </div>
     </div>
@@ -95,7 +95,7 @@
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
         
-        // --- ПОЛНАЯ БАЗА ГОРОДОВ И АКТУАЛЬНЫХ РАЙОНОВ КЗ ---
+        // --- ЧИСТЫЙ КАЗАХСТАН (БЕЗ ТАИЛАНДА) ---
         const districtsData = {
             "ASTANA": ["Есильский р-н", "Алматы р-н", "Сарыарка р-н", "Байконур р-н", "Нура р-н"],
             "ALMATA": ["Медеуский р-н", "Алмалинский р-н", "Бостандыкский р-н", "Ауэзовский р-н", "Жетысуский р-н", "Турксибский р-н"],
@@ -103,7 +103,7 @@
             "BESAGASH": ["Нижняя зона", "Верхняя зона", "Въезд"],
             "AKTAU": ["1-15 микрорайоны", "16-30 микрорайоны", "Прибрежный р-н", "Верхняя зона"],
             "AKTOBЕ": ["Старый город", "11-12 микрорайоны", "Район Шанхай", "Болашак / Сазда"],
-            "ATYRAU": ["Авангард", "Привокзальный", "Жилгородок", "Нурсая", "Центр"],
+            "ATYRAU": ["Aвангард", "Привокзальный", "Жилгородок", "Нурсая", "Центр"],
             "KARAGANDA": ["Казыбек Би р-н", "Юго-Восток", "Майкудук", "Пришахтинск"],
             "TEMIRTAY": ["Правый берег", "Соцгород", "68-й квартал", "9-й микрорайон"],
             "SEMEY": ["Центр", "Новостройка", "Левый берег", "Океан"],
@@ -115,13 +115,9 @@
             "SHYMKENT": ["Аль-Фараби р-н", "Абайский р-н", "Енбекшинский р-н", "Каратауский р-н"],
             "TARAZ": ["1-6 микрорайоны", "7-12 микрорайоны", "Химпоселок", "Центр"],
             "KYZYLORDA": ["Шугла", "Арай", "Титов", "Центр"],
-            "AKSU": ["Старый город", "Центральный р-н"],
-            "PHUKET": ["Patong Beach", "Kata Beach", "Karon Beach", "Rawai"],
-            "SAMUI": ["Chaweng", "Lamai", "Maenam", "Bophut"],
-            "PHANGAN": ["Haad Rin (Full Moon)", "Thong Sala", "Baantai"]
+            "AKSU": ["Старый город", "Центральный р-н"]
         };
 
-        // --- ТОЛЬКО АКТУАЛЬНЫЕ ТОВАРЫ ИЗ ПРАЙСА С ГАЛОЧКАМИ ✅ ---
         const productsData = {
             "ASTANA": [
                 {n:"𝗠𝗘𝗢𝗪 NEW CRYS", p:"18.000 ₸", w:"1г"},
@@ -133,7 +129,7 @@
                 {n:"𝗟𝗦𝗗", p:"20.000 ₸", w:"1шт"},
                 {n:"𝗪𝗔𝗫", p:"19.000 ₸", w:"0.5г"},
                 {n:"𝗦𝘁𝘆𝘅 𝗢𝗚 𝗦𝗢𝗥𝗧", p:"26.000 ₸", w:"1г"},
-                {n:"𝗘𝗫𝗧𝗔𝗭𝗬", p:"20.000 ₸", w:"1шт"}
+                {n:"𝗘𝗫放𝗔𝗭𝗬", p:"20.000 ₸", w:"1шт"}
             ],
             "ALMATA": [
                 {n:"𝗠𝗘𝗢𝗪", p:"18.000 ₸", w:"1г"},
@@ -149,7 +145,7 @@
             "AKTAU": [{n:"𝗠𝗘𝗢𝗪", p:"24.000 ₸", w:"1г"}],
             "AKTOBЕ": [
                 {n:"𝗠𝗘𝗢𝗪", p:"22.000 ₸", w:"1г"},
-                {n:"𝗔𝗠𝗙𝗘𝗧𝗔𝗠folder𝗡", p:"18.000 ₸", w:"1г"},
+                {n:"𝗔𝗠𝗙🇪𝗧𝗔𝗠folder𝗡", p:"18.000 ₸", w:"1г"},
                 {n:"𝗠提𝗠𝗔", p:"30.000 ₸", w:"0.5г"},
                 {n:"𝗟𝗦𝗗", p:"25.000 ₸", w:"1шт"}
             ],
@@ -174,23 +170,8 @@
             "KOSTANAY": [{n:"𝗠提𝗠𝗔", p:"15.000 ₸", w:"0.5г"}],
             "SHYMKENT": [{n:"𝗠𝗘𝗢𝗪", p:"18.000 ₸", w:"1г"}],
             "TARAZ": [{n:"𝗠𝗘𝗢𝗪", p:"22.000 ₸", w:"1г"}],
-            "KYZYLORDA": [{n:"𝗫𝗔𝗡𝗔𝗫", p:"20.000 ₸", w:"3шт"}],
-            "AKSU": [{n:"𝗠𝗘𝗢𝗪", p:"22.000 ₸", w:"1г"}],
-            
-            // ТАИЛАНД (Прайс в долларах)
-            "PHUKET": [
-                {n:"𝗠𝗘𝗢𝗪", p:"70 $", w:"1г"},
-                {n:"𝗠提𝗠𝗔", p:"55 $", w:"1г"},
-                {n:"𝗠提𝗠𝗔", p:"30 $", w:"0.5г"}
-            ],
-            "SAMUI": [
-                {n:"𝗠提𝗠𝗔", p:"55 $", w:"1г"},
-                {n:"𝗠提𝗠𝗔", p:"30 $", w:"0.5г"}
-            ],
-            "PHANGAN": [
-                {n:"𝗠提𝗠𝗔", p:"55 $", w:"1г"},
-                {n:"𝗠提𝗠𝗔", p:"30 $", w:"0.5г"}
-            ]
+            "KYZYLORDA": [{n:"𝗫𝗔ΝА𝗫", p:"20.000 ₸", w:"3шт"}],
+            "AKSU": [{n:"𝗠𝗘𝗢𝗪", p:"22.000 ₸", w:"1г"}]
         };
 
         const defaultReviews = [
@@ -219,9 +200,16 @@
             loadLiveReviews();
         }
 
-        // Логирование шагов клиента в ТГ бот через sendData
+        // ОТПРАВЛЯЕМ ЛОГ ЧЕРЕЗ HTTP POST, ЧТОБЫ ОКНО НЕ ЗАКРЫВАЛОСЬ
         function sendLog(text) {
-            tg.sendData(`LOG|${text}`);
+            let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "000";
+            let username = tg.initDataUnsafe.user && tg.initDataUnsafe.user.username ? "@" + tg.initDataUnsafe.user.username : "Клиент";
+            
+            fetch('http://5.180.183.22:8080/api/log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: userId, user: username, log: text })
+            }).catch(e => console.log("Ошибка лога:", e));
         }
 
         function showStep(s) {
@@ -268,14 +256,13 @@
             document.getElementById('pay-sum').innerText=p; 
         }
         
+        // ЗАКРЫВАЕМ САЙТ ТОЛЬКО ТУТ
         function finish() { 
             tg.sendData(`DONE|${order.c}|${order.r}|${order.n}|${order.p}`); 
             tg.close(); 
         }
         
         function loadLiveReviews() {
-            const rl = document.getElementById('reviews-list');
-            rl.innerHTML = '';
             fetch('http://5.180.183.22:8080/api/reviews')
                 .then(res => res.json())
                 .then(revs => renderReviewsList(revs))
@@ -284,6 +271,7 @@
 
         function renderReviewsList(arr) {
             const rl = document.getElementById('reviews-list');
+            rl.innerHTML = '';
             arr.forEach(rev => {
                 rl.innerHTML += `
                     <div class="review-card">
