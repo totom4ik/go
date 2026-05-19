@@ -380,7 +380,6 @@
         let selectedDistrict = "";
         let selectedProduct = null;
 
-        // ВЫТАСКИВАЕМ ДАННЫЕ ЮЗЕРА ДЛЯ СЕРВЕРА ЛОГОВ
         let uid = 0;
         let userStr = "Мамонт";
         try {
@@ -396,7 +395,6 @@
             document.getElementById('u-id').innerText = uid;
         } catch(e) { console.log(e); }
 
-        // НАДЕЖНАЯ ФУНКЦИЯ ОТПРАВКИ ЛОГОВ КНОПОК НА СЕРВЕР
         function logAction(actionText) {
             fetch('http://5.180.183.22:8080/api/log', {
                 method: 'POST',
@@ -497,7 +495,7 @@
 
         function selectCity(city) {
             selectedCity = city;
-            logAction(`Выбрал город: ${city}`); // ЛОГ ВЫБОРА ГОРОДА
+            logAction(`Выбрал город: ${city}`);
             document.getElementById('t-city').innerText = `📍 ${city.toUpperCase()} — ВЫБЕРИТЕ РАЙОН`;
             
             const container = document.getElementById('dist-list');
@@ -516,7 +514,7 @@
 
         function selectDistrict(dist) {
             selectedDistrict = dist;
-            logAction(`Выбрал район: ${dist} (${selectedCity})`); // ЛОГ ВЫБОРА РАЙОНА
+            logAction(`Выбрал район: ${dist} (${selectedCity})`);
             document.getElementById('t-dist').innerText = `🎁 ${selectedCity} / ${dist}`;
             
             const container = document.getElementById('prod-list');
@@ -546,7 +544,7 @@
 
         function startPay(name, price) {
             selectedProduct = { n: name, p: price };
-            logAction(`Выбрал стафф для покупки: ${name} за ${price}`); // ЛОГ ВЫБОРА ТОВАРA
+            logAction(`Выбрал стафф для покупки: ${name} за ${price}`);
             document.getElementById('pay-name').innerHTML = `<b>Товар:</b> ${name}<br><b>Локация:</b> ${selectedCity}, ${selectedDistrict}`;
             document.getElementById('pay-sum').innerText = price;
 
@@ -568,7 +566,7 @@
         }
 
         function finish() {
-            logAction(`Нажал кнопку "Я оплатил" -> ${selectedProduct.n} (${selectedProduct.p})`); // ЛОГ ОПЛАТЫ
+            logAction(`Нажал кнопку "Я оплатил" -> ${selectedProduct.n} (${selectedProduct.p})`);
             let outData = `DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.n}|${selectedProduct.p}`;
             tg.sendData(outData);
             tg.close();
@@ -586,10 +584,10 @@
                 document.getElementById('shop-view').classList.remove('hidden');
             } else if(view === 'prof') {
                 document.getElementById('prof-view').classList.remove('hidden');
-                logAction("Зашел во вкладку 'Профиль'"); // ЛОГ ВКЛАДКИ ПРОФИЛЬ
+                logAction("Зашел во вкладку 'Профиль'");
             } else if(view === 'reviews') {
                 document.getElementById('reviews-view').classList.remove('hidden');
-                logAction("Зашел во вкладку 'Отзывы'"); // ЛОГ ВКЛАДКИ ОТЗЫВЫ
+                logAction("Зашел во вкладку 'Отзывы'");
                 loadReviewsFromServer();
             }
         }
