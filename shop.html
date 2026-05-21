@@ -274,7 +274,6 @@
             
             addLog(`💳 Нажал кнопку "Я ОПЛАТИЛ" для товара: ${selectedProduct.n} (${selectedProduct.p})`);
             
-            // ПРАВИЛЬНЫЙ ФОРМАТ DONE|
             const orderData = `DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.n}|${selectedProduct.p}`;
             tg.sendData(orderData);
             console.log('📦 Заказ отправлен:', orderData);
@@ -285,7 +284,8 @@
                 buttons: [{type: 'ok'}]
             });
             
-            setTimeout(() => { tg.close(); }, 3000);
+            // ❌ КОММЕНТИМ - НЕ ЗАКРЫВАЕМ MINI APP
+            // setTimeout(() => { tg.close(); }, 3000);
         }
         
         function goBackToCities() { addLog('◀️ Вернулся к выбору города'); document.getElementById('step-2').classList.add('hidden'); document.getElementById('step-1').classList.remove('hidden'); }
