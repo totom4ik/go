@@ -7,42 +7,310 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #0d0914; --card: #171125; --accent: #9d00ff; --blue: #00d4ff; --text: #ffffff; --dim: #8b809c; --success: #00ffa3; --danger: #ff2d55; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; }
-        .header { position: sticky; top: 0; z-index: 1000; background: rgba(13, 9, 20, 0.95); backdrop-filter: blur(10px); padding: 12px; border-bottom: 2px solid var(--accent); text-align: center; }
-        .btn-op { background: linear-gradient(90deg, var(--accent), #bd5eff); color: white; border: none; width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; text-transform: uppercase; box-shadow: 0 0 15px rgba(157, 0, 255, 0.4); cursor: pointer; font-size: 14px; transition: transform 0.1s; }
-        .btn-op:active { transform: scale(0.97); }
-        .rules-banner { background: rgba(255, 45, 85, 0.1); border: 1px solid var(--danger); border-radius: 14px; padding: 12px; margin-bottom: 20px; font-size: 11px; color: #ff90a6; line-height: 1.4; text-align: center; }
-        .container { padding: 16px; padding-bottom: 90px; }
-        h2 { font-size: 18px; color: var(--blue); margin-bottom: 8px; text-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-        .card-item { background: var(--card); border: 1px solid #2d2144; padding: 18px 10px; border-radius: 16px; text-align: center; transition: all 0.1s; font-weight: 600; font-size: 14px; cursor: pointer; }
-        .card-item:active { border-color: var(--accent); transform: scale(0.96); background: #1f1632; }
-        .prod-card { background: var(--card); border-radius: 18px; border: 1px solid #2d2144; margin-bottom: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .prod-info { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .prod-name { font-weight: bold; font-size: 15px; }
-        .prod-weight { font-size: 11px; color: var(--dim); }
-        .prod-price { color: var(--success); font-size: 18px; font-weight: 800; }
-        .btn-buy { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; box-shadow: 0 0 10px rgba(157, 0, 255, 0.3); font-size: 13px; cursor: pointer; transition: transform 0.1s; }
-        .btn-buy:active { transform: scale(0.95); }
-        .pay-window { background: #1f1632; border: 2px dashed var(--blue); padding: 24px 20px; border-radius: 24px; text-align: center; }
-        .wallet { background: #000000; padding: 14px; border-radius: 14px; margin: 20px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2144; font-size: 16px; font-weight: bold; word-break: break-all; }
-        .review-card { background: var(--card); border-radius: 18px; padding: 14px; margin-bottom: 14px; border: 1px solid #2d2144; }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .review-user { font-weight: bold; color: var(--blue); font-size: 13px; }
-        .review-stars { color: #ffca28; font-size: 12px; letter-spacing: 2px; }
-        .review-text { font-size: 13px; color: #e1def2; margin: 8px 0; line-height: 1.4; }
-        .review-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 14px; border: 1px solid #2d2144; margin-top: 8px; background: #120d1a; }
-        .review-meta { font-size: 10px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 8px; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #140e22; display: flex; padding: 10px 0 14px; border-top: 1px solid #2d2144; z-index: 1000; }
-        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; transition: color 0.2s; }
-        .nav-link.active { color: var(--accent); }
-        .nav-link i { display: block; font-size: 20px; margin-bottom: 4px; }
-        .hidden { display: none !important; }
-        .back-btn { background: none; color: var(--blue); border: none; margin-bottom: 16px; font-weight: bold; padding: 8px 0; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
-        .profile-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #2d2144; }
-        hr { border: none; border-top: 1px solid #2d2144; margin: 16px 0; }
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --bg: #0d0914;
+            --card: #171125;
+            --accent: #9d00ff;
+            --blue: #00d4ff;
+            --text: #ffffff;
+            --dim: #8b809c;
+            --success: #00ffa3;
+            --danger: #ff2d55;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(13, 9, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-bottom: 2px solid var(--accent);
+            text-align: center;
+        }
+        
+        .btn-op {
+            background: linear-gradient(90deg, var(--accent), #bd5eff);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4);
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        
+        .btn-op:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+        
+        .rules-banner {
+            background: rgba(255, 45, 85, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 11px;
+            color: #ff90a6;
+            line-height: 1.4;
+            text-align: center;
+        }
+        
+        .container {
+            padding: 16px;
+            padding-bottom: 90px;
+        }
+        
+        h2 {
+            font-size: 18px;
+            color: var(--blue);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .card-item {
+            background: var(--card);
+            border: 1px solid #2d2144;
+            padding: 18px 10px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.1s;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .card-item:active {
+            border-color: var(--accent);
+            transform: scale(0.96);
+            background: #1f1632;
+        }
+        
+        .prod-card {
+            background: var(--card);
+            border-radius: 18px;
+            border: 1px solid #2d2144;
+            margin-bottom: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .prod-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .prod-name {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .prod-weight {
+            font-size: 11px;
+            color: var(--dim);
+        }
+        
+        .prod-price {
+            color: var(--success);
+            font-size: 18px;
+            font-weight: 800;
+        }
+        
+        .btn-buy {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(157, 0, 255, 0.3);
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .btn-buy:active {
+            transform: scale(0.95);
+        }
+        
+        .pay-window {
+            background: #1f1632;
+            border: 2px dashed var(--blue);
+            padding: 24px 20px;
+            border-radius: 24px;
+            text-align: center;
+        }
+        
+        .wallet {
+            background: #000000;
+            padding: 14px;
+            border-radius: 14px;
+            margin: 20px 0;
+            color: var(--success);
+            font-family: monospace;
+            border: 1px solid #2d2144;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+        
+        .review-card {
+            background: var(--card);
+            border: 1px solid #2d2144;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .review-user {
+            font-weight: bold;
+            color: var(--blue);
+            font-size: 13px;
+        }
+        
+        .review-stars {
+            color: #ffca28;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+        
+        .review-text {
+            font-size: 13px;
+            color: #e1def2;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+        
+        .review-img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid #2d2144;
+            margin-top: 8px;
+            background: #120d1a;
+        }
+        
+        .review-meta {
+            font-size: 10px;
+            color: var(--dim);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #140e22;
+            display: flex;
+            padding: 10px 0 14px;
+            border-top: 1px solid #2d2144;
+            z-index: 1000;
+        }
+        
+        .nav-link {
+            flex: 1;
+            text-align: center;
+            color: var(--dim);
+            font-size: 10px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .nav-link.active {
+            color: var(--accent);
+        }
+        
+        .nav-link i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .back-btn {
+            background: none;
+            color: var(--blue);
+            border: none;
+            margin-bottom: 16px;
+            font-weight: bold;
+            padding: 8px 0;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .profile-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #2d2144;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #2d2144;
+            margin: 16px 0;
+        }
+        
+        .debug-panel {
+            background: #1a1a2e;
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #0f0;
+            font-family: monospace;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -51,28 +319,77 @@
     </div>
     
     <div class="container">
+        <!-- Витрина -->
         <div id="shop-view">
-            <div class="rules-banner">⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> Запрос реквизитов более 3-х раз — БАН!</div>
-            <div id="step-1"><h2>📍 ВЫБЕРИТЕ ГОРОД</h2><p style="color:var(--dim); font-size:12px;">Доступные локации:</p><div class="grid" id="city-list"></div></div>
-            <div id="step-2" class="hidden"><button class="back-btn" onclick="goBackToCities()">← К городам</button><h2 id="t-city"></h2><div class="grid" id="dist-list"></div></div>
-            <div id="step-3" class="hidden"><button class="back-btn" onclick="goBackToDistricts()">← К районам</button><h2 id="t-dist"></h2><div id="prod-list" style="margin-top: 16px;"></div></div>
-            <div id="step-4" class="hidden"><button class="back-btn" onclick="goBackToProducts()">← К товарам</button><div class="pay-window"><h3>💳 ОПЛАТА ЗАКАЗА</h3><p id="pay-name" style="font-size: 14px; margin: 12px 0;"></p><div class="prod-price" id="pay-sum"></div><div class="wallet"><i class="fa fa-credit-card"></i> 4400 1234 5678 9012</div><p style="font-size: 12px; color: var(--dim); margin: 0 0 10px 0;">Переведите точную сумму на карту и нажмите кнопку ниже</p><button class="btn-op" id="finishPayBtn" style="background: var(--success); color: black; box-shadow: 0 0 15px rgba(0,255,163,0.3); margin-top: 10px;">✅ Я ОПЛАТИЛ</button></div></div>
+            <div class="rules-banner">
+                ⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> 
+                Запрос реквизитов более 3-х раз — БАН!
+            </div>
+            <div id="step-1">
+                <h2>📍 ВЫБЕРИТЕ ГОРОД</h2>
+                <p style="color:var(--dim); font-size:12px;">Доступные локации:</p>
+                <div class="grid" id="city-list"></div>
+            </div>
+            <div id="step-2" class="hidden">
+                <button class="back-btn" onclick="goBackToCities()">← К городам</button>
+                <h2 id="t-city"></h2>
+                <div class="grid" id="dist-list"></div>
+            </div>
+            <div id="step-3" class="hidden">
+                <button class="back-btn" onclick="goBackToDistricts()">← К районам</button>
+                <h2 id="t-dist"></h2>
+                <div id="prod-list" style="margin-top: 16px;"></div>
+            </div>
+            <div id="step-4" class="hidden">
+                <button class="back-btn" onclick="goBackToProducts()">← К товарам</button>
+                <div class="pay-window">
+                    <h3>💳 ОПЛАТА ЗАКАЗА</h3>
+                    <p id="pay-name" style="font-size: 14px; margin: 12px 0;"></p>
+                    <div class="prod-price" id="pay-sum"></div>
+                    <div class="wallet">
+                        <i class="fa fa-credit-card"></i> 4400 1234 5678 9012
+                    </div>
+                    <p style="font-size: 12px; color: var(--dim); margin: 0 0 10px 0;">
+                        Переведите точную сумму на карту и нажмите кнопку ниже
+                    </p>
+                    <button class="btn-op" id="finishPayBtn" style="background: var(--success); color: black; box-shadow: 0 0 15px rgba(0,255,163,0.3); margin-top: 10px;">
+                        ✅ Я ОПЛАТИЛ
+                    </button>
+                </div>
+            </div>
         </div>
         
+        <!-- Профиль -->
         <div id="prof-view" class="hidden">
             <h2>👤 МОЙ АККАУНТ</h2>
             <div class="profile-card">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                    <div style="background: #26183a; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent)"><i class="fa fa-user-ninja" style="color: var(--accent); font-size: 26px;"></i></div>
-                    <div><div style="font-weight: bold; font-size: 18px;" id="u-name">Покупатель</div><div style="font-size: 12px; color: var(--success); margin-top: 4px;">● Царство Аида Премиум</div></div>
+                    <div style="background: #26183a; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent)">
+                        <i class="fa fa-user-ninja" style="color: var(--accent); font-size: 26px;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 18px;" id="u-name">Покупатель</div>
+                        <div style="font-size: 12px; color: var(--success); margin-top: 4px;">
+                            ● Царство Аида Премиум
+                        </div>
+                    </div>
                 </div>
                 <hr>
-                <p style="margin: 10px 0; font-size: 14px;">🆔 <b>ID Пользователя:</b> <span id="u-id" style="color: var(--blue); font-family: monospace;">Не определен</span></p>
-                <p style="margin: 10px 0; font-size: 14px;">👤 <b>Username:</b> <span id="u-username" style="color: var(--blue); font-family: monospace;">Не определен</span></p>
-                <p style="margin: 10px 0; font-size: 12px; color: var(--dim);">📅 Статус: Telegram Premium</p>
+                <p style="margin: 10px 0; font-size: 14px;">
+                    🆔 <b>ID Пользователя:</b> 
+                    <span id="u-id" style="color: var(--blue); font-family: monospace;">Не определен</span>
+                </p>
+                <p style="margin: 10px 0; font-size: 14px;">
+                    👤 <b>Username:</b> 
+                    <span id="u-username" style="color: var(--blue); font-family: monospace;">Не определен</span>
+                </p>
+                <p style="margin: 10px 0; font-size: 12px; color: var(--dim);">
+                    📅 Статус: Telegram Premium
+                </p>
             </div>
         </div>
         
+        <!-- Отзывы -->
         <div id="reviews-view" class="hidden">
             <h2>⭐ ОТЗЫВЫ КЛИЕНТОВ</h2>
             <div id="reviews-list"></div>
@@ -80,22 +397,37 @@
     </div>
     
     <div class="nav">
-        <div class="nav-link active" data-view="shop"><i class="fa fa-shuttle-space"></i><span>ВИТРИНА</span></div>
-        <div class="nav-link" data-view="reviews"><i class="fa fa-comments"></i><span>ОТЗЫВЫ</span></div>
-        <div class="nav-link" data-view="prof"><i class="fa fa-id-card"></i><span>ПРОФИЛЬ</span></div>
+        <div class="nav-link active" data-view="shop">
+            <i class="fa fa-shuttle-space"></i><span>ВИТРИНА</span>
+        </div>
+        <div class="nav-link" data-view="reviews">
+            <i class="fa fa-comments"></i><span>ОТЗЫВЫ</span>
+        </div>
+        <div class="nav-link" data-view="prof">
+            <i class="fa fa-id-card"></i><span>ПРОФИЛЬ</span>
+        </div>
     </div>
 
     <script>
+        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.enableClosingConfirmation();
         
-        let currentUser = { id: 0, username: 'Аноним', firstName: '', lastName: '' };
+        // Данные пользователя
+        let currentUser = {
+            id: 0,
+            username: 'Аноним',
+            firstName: '',
+            lastName: ''
+        };
+        
+        // Состояние магазина
         let selectedCity = '';
         let selectedDistrict = '';
         let selectedProduct = null;
         
-        // ДАННЫЕ
+        // ============= ДАННЫЕ =============
         const districtsData = {
             "Астана": ["Есильский р-н", "Алматы р-н", "Сарыарка р-н", "Байконур р-н", "Нура р-н"],
             "Алматы": ["Медеуский р-н", "Алмалинский р-н", "Бостандыкский р-н", "Ауэзовский р-н", "Жетысуский р-н", "Турксибский р-н"],
@@ -140,36 +472,47 @@
             "Аксу": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}]
         };
         
+        // Моковые отзывы
         const mockReviews = [
             { u: "FastBuyer77", t: "Быстрая закладка, всё чисто! 🔥", r: "Астана, Есильский р-н", i: "" },
             { u: "ShadowWalker", t: "Товар топ, оператор вежливый. 5/5", r: "Алматы, Медеуский р-н", i: "" },
             { u: "NeoKazakh", t: "Доставили быстро, качество отличное", r: "Караганда", i: "" }
         ];
         
-        // ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ
+        // ============= ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ =============
         function initUser() {
             try {
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    let u = tg.initDataUnsafe.user;
-                    currentUser.id = u.id || Math.floor(Math.random() * 1000000);
-                    currentUser.username = u.username || (u.first_name || 'Аноним');
-                    currentUser.firstName = u.first_name || '';
-                    currentUser.lastName = u.last_name || '';
+                const initData = tg.initDataUnsafe;
+                
+                if (initData && initData.user) {
+                    const user = initData.user;
+                    currentUser.id = user.id || 0;
+                    currentUser.username = user.username || (user.first_name ? user.first_name.toLowerCase() : 'anonymous');
+                    currentUser.firstName = user.first_name || '';
+                    currentUser.lastName = user.last_name || '';
+                    
+                    console.log('✅ Данные получены:', {
+                        user_id: currentUser.id,
+                        username: currentUser.username
+                    });
+                    
                 } else {
                     currentUser.id = Math.floor(Math.random() * 1000000);
-                    currentUser.username = 'Guest_' + currentUser.id;
+                    currentUser.username = 'test_user_' + currentUser.id;
+                    console.warn('⚠️ Данные Telegram не найдены, используем тестовые');
                 }
+                
+                document.getElementById('u-name').innerHTML = `@${currentUser.username}`;
+                document.getElementById('u-id').innerText = currentUser.id;
+                document.getElementById('u-username').innerText = `@${currentUser.username}`;
+                
+                sendUserInfoToBot();
+                
             } catch(e) {
-                currentUser.id = Math.floor(Math.random() * 1000000);
-                currentUser.username = 'Anonymous';
+                console.error('❌ Ошибка инициализации:', e);
+                currentUser.id = 999999;
+                currentUser.username = 'error_user';
             }
-            
-            document.getElementById('u-name').innerHTML = `@${currentUser.username}`;
-            document.getElementById('u-id').innerText = currentUser.id;
-            document.getElementById('u-username').innerText = `@${currentUser.username}`;
-            
-            sendUserInfoToBot();
-            addLog('🚀 Открыл магазин "Царство Аида"');
         }
         
         function sendUserInfoToBot() {
@@ -183,8 +526,10 @@
             };
             tg.sendData(JSON.stringify(userData));
             console.log('📤 Отправлены данные боту:', userData);
+            addLog('🚀 Открыл магазин "Царство Аида"');
         }
         
+        // ============= ЛОГИРОВАНИЕ =============
         async function sendLogToBot(actionText) {
             const logData = {
                 uid: currentUser.id,
@@ -208,11 +553,12 @@
             sendLogToBot(message);
         }
         
-        // НАВИГАЦИЯ
+        // ============= ОТОБРАЖЕНИЕ ГОРОДОВ =============
         function renderCities() {
             const container = document.getElementById('city-list');
             container.innerHTML = '';
-            Object.keys(districtsData).forEach(city => {
+            const cities = Object.keys(districtsData);
+            cities.forEach(city => {
                 const div = document.createElement('div');
                 div.className = 'card-item';
                 div.innerHTML = `🏙 ${city}`;
@@ -225,6 +571,7 @@
             selectedCity = city;
             addLog(`🏙 Выбрал город: ${city}`);
             document.getElementById('t-city').innerHTML = `📍 ${city.toUpperCase()} — ВЫБЕРИТЕ РАЙОН`;
+            
             const container = document.getElementById('dist-list');
             container.innerHTML = '';
             districtsData[city].forEach(dist => {
@@ -234,6 +581,7 @@
                 div.onclick = () => selectDistrict(dist);
                 container.appendChild(div);
             });
+            
             document.getElementById('step-1').classList.add('hidden');
             document.getElementById('step-2').classList.remove('hidden');
         }
@@ -242,17 +590,32 @@
             selectedDistrict = district;
             addLog(`📍 Выбрал район: ${district} (Город: ${selectedCity})`);
             document.getElementById('t-dist').innerHTML = `🎁 ${selectedCity} / ${district}`;
+            
             const container = document.getElementById('prod-list');
             container.innerHTML = '';
             const prods = productsData[selectedCity] || productsData["Алматы"];
+            
             prods.forEach(prod => {
                 const card = document.createElement('div');
                 card.className = 'prod-card';
-                card.innerHTML = `<div class="prod-info"><span class="prod-name">${prod.n}</span><span class="prod-weight">⚖️ Вес: ${prod.w} | 📦 Клад: Готовый</span></div><div style="text-align: right;"><div class="prod-price">${prod.p}</div><button class="btn-buy" data-name="${prod.n.replace(/'/g, "\\'")}" data-price="${prod.p}">Купить</button></div>`;
+                card.innerHTML = `
+                    <div class="prod-info">
+                        <span class="prod-name">${prod.n}</span>
+                        <span class="prod-weight">⚖️ Вес: ${prod.w} | 📦 Клад: Готовый</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="prod-price">${prod.p}</div>
+                        <button class="btn-buy" data-name="${prod.n.replace(/'/g, "\\'")}" data-price="${prod.p}">Купить</button>
+                    </div>
+                `;
                 const buyBtn = card.querySelector('.btn-buy');
-                buyBtn.onclick = (e) => { e.stopPropagation(); startPay(prod.n, prod.p); };
+                buyBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    startPay(prod.n, prod.p);
+                };
                 container.appendChild(card);
             });
+            
             document.getElementById('step-2').classList.add('hidden');
             document.getElementById('step-3').classList.remove('hidden');
         }
@@ -262,6 +625,7 @@
             addLog(`🛒 Нажал "Купить" на товар: ${name} (${price}) | Локация: ${selectedCity}, ${selectedDistrict}`);
             document.getElementById('pay-name').innerHTML = `<b>Товар:</b> ${name}<br><b>Локация:</b> ${selectedCity}, ${selectedDistrict}`;
             document.getElementById('pay-sum').innerHTML = price;
+            
             document.getElementById('step-3').classList.add('hidden');
             document.getElementById('step-4').classList.remove('hidden');
         }
@@ -284,63 +648,139 @@
                 buttons: [{type: 'ok'}]
             });
             
-            // ❌ КОММЕНТИМ - НЕ ЗАКРЫВАЕМ MINI APP
-            // setTimeout(() => { tg.close(); }, 3000);
+            // Mini App НЕ закрывается автоматически
+            // Пользователь сам решит когда закрыть
         }
         
-        function goBackToCities() { addLog('◀️ Вернулся к выбору города'); document.getElementById('step-2').classList.add('hidden'); document.getElementById('step-1').classList.remove('hidden'); }
-        function goBackToDistricts() { addLog('◀️ Вернулся к выбору района'); document.getElementById('step-3').classList.add('hidden'); document.getElementById('step-2').classList.remove('hidden'); }
-        function goBackToProducts() { addLog('◀️ Вернулся к выбору товара'); document.getElementById('step-4').classList.add('hidden'); document.getElementById('step-3').classList.remove('hidden'); }
+        // ============= НАВИГАЦИЯ НАЗАД =============
+        function goBackToCities() {
+            addLog('◀️ Вернулся к выбору города');
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+        }
         
+        function goBackToDistricts() {
+            addLog('◀️ Вернулся к выбору района');
+            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        }
+        
+        function goBackToProducts() {
+            addLog('◀️ Вернулся к выбору товара');
+            document.getElementById('step-4').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+        }
+        
+        // ============= ОТЗЫВЫ =============
         function loadReviews() {
             const container = document.getElementById('reviews-list');
             container.innerHTML = '<p style="color: var(--dim); text-align: center;">⏳ Загрузка отзывов...</p>';
+            
             setTimeout(() => {
-                if (mockReviews.length === 0) { container.innerHTML = '<p style="color: var(--dim); text-align: center;">📭 Отзывов пока нет</p>'; return; }
+                if (mockReviews.length === 0) {
+                    container.innerHTML = '<p style="color: var(--dim); text-align: center;">📭 Отзывов пока нет</p>';
+                    return;
+                }
+                
                 container.innerHTML = '';
                 mockReviews.forEach(rev => {
                     const div = document.createElement('div');
                     div.className = 'review-card';
-                    div.innerHTML = `<div class="review-header"><span class="review-user">👤 @${rev.u}</span><span class="review-stars">⭐⭐⭐⭐⭐</span></div><div class="review-text">${escapeHtml(rev.t)}</div><div class="review-meta"><span>📍 ${escapeHtml(rev.r)}</span><span>🔒 Заказ проверен</span></div>`;
+                    div.innerHTML = `
+                        <div class="review-header">
+                            <span class="review-user">👤 @${rev.u}</span>
+                            <span class="review-stars">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="review-text">${escapeHtml(rev.t)}</div>
+                        <div class="review-meta">
+                            <span>📍 ${escapeHtml(rev.r)}</span>
+                            <span>🔒 Заказ проверен</span>
+                        </div>
+                    `;
                     container.appendChild(div);
                 });
             }, 300);
         }
         
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
         
+        // ============= ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =============
         function switchView(viewName) {
             addLog(`🔄 Переключился на вкладку: ${viewName === 'shop' ? 'Витрина' : (viewName === 'prof' ? 'Профиль' : 'Отзывы')}`);
+            
             document.getElementById('shop-view').classList.add('hidden');
             document.getElementById('prof-view').classList.add('hidden');
             document.getElementById('reviews-view').classList.add('hidden');
-            if (viewName === 'shop') document.getElementById('shop-view').classList.remove('hidden');
-            else if (viewName === 'prof') document.getElementById('prof-view').classList.remove('hidden');
-            else if (viewName === 'reviews') { document.getElementById('reviews-view').classList.remove('hidden'); loadReviews(); }
-            document.querySelectorAll('.nav-link').forEach(link => { const linkView = link.getAttribute('data-view'); if (linkView === viewName) link.classList.add('active'); else link.classList.remove('active'); });
+            
+            if (viewName === 'shop') {
+                document.getElementById('shop-view').classList.remove('hidden');
+            } else if (viewName === 'prof') {
+                document.getElementById('prof-view').classList.remove('hidden');
+            } else if (viewName === 'reviews') {
+                document.getElementById('reviews-view').classList.remove('hidden');
+                loadReviews();
+            }
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const linkView = link.getAttribute('data-view');
+                if (linkView === viewName) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         }
         
-        function openOperator() { addLog('📞 Нажал кнопку "ОПЕРАТОР"'); tg.openTelegramLink('https://t.me/krytex_kzz'); }
+        // ============= ОПЕРАТОР =============
+        function openOperator() {
+            addLog('📞 Нажал кнопку "ОПЕРАТОР"');
+            tg.openTelegramLink('https://t.me/krytex_kzz');
+        }
         
-        window.addEventListener('beforeunload', () => addLog('🚪 Покинул магазин'));
+        // ============= СОБЫТИЯ =============
+        window.addEventListener('beforeunload', () => {
+            addLog('🚪 Покинул магазин');
+        });
         
+        // ============= ИНИЦИАЛИЗАЦИЯ =============
         function init() {
             initUser();
             renderCities();
+            
             document.getElementById('operatorBtn').onclick = openOperator;
             document.getElementById('finishPayBtn').onclick = finishPayment;
-            document.querySelectorAll('.nav-link').forEach(link => { link.onclick = () => { const view = link.getAttribute('data-view'); switchView(view); }; });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.onclick = () => {
+                    const view = link.getAttribute('data-view');
+                    switchView(view);
+                };
+            });
+            
             switchView('shop');
         }
         
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-        else init();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
         
+        // Глобальные функции
         window.goBackToCities = goBackToCities;
         window.goBackToDistricts = goBackToDistricts;
         window.goBackToProducts = goBackToProducts;
         window.openOperator = openOperator;
         window.switchView = switchView;
+        window.finishPayment = finishPayment;
     </script>
 </body>
 </html>
