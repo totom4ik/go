@@ -8,95 +8,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0d0914; --card: #171125; --accent: #9d00ff; --blue: #00d4ff; --text: #ffffff; --dim: #8b809c; --success: #00ffa3; --danger: #ff2d55; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .header { position: sticky; top: 0; z-index: 1000; background: rgba(13, 9, 20, 0.95); backdrop-filter: blur(10px); padding: 12px; border-bottom: 2px solid var(--accent); text-align: center; }
-        .btn-op { background: linear-gradient(90deg, var(--accent), #bd5eff); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; text-transform: uppercase; box-shadow: 0 0 15px rgba(157, 0, 255, 0.4); cursor: pointer; }
-        .rules-banner { background: rgba(255, 45, 85, 0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 10px; margin-bottom: 15px; font-size: 11px; color: #ff90a6; line-height: 1.4; text-align: center; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        .header { position: sticky; top: 0; z-index: 1000; background: rgba(13, 9, 20, 0.95); padding: 12px; border-bottom: 2px solid var(--accent); text-align: center; }
+        .btn-op { background: linear-gradient(90deg, var(--accent), #bd5eff); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .container { padding: 15px; padding-bottom: 100px; }
-        h2 { font-size: 18px; color: var(--blue); margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .card-item { background: var(--card); border: 1px solid #2d2144; padding: 18px 10px; border-radius: 14px; text-align: center; transition: 0.2s; font-weight: 600; font-size: 13px; cursor: pointer; }
-        .card-item:active { border-color: var(--accent); transform: scale(0.97); }
-        .prod-card { background: var(--card); border-radius: 16px; border: 1px solid #2d2144; margin-bottom: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .prod-info { display: flex; flex-direction: column; gap: 4px; }
-        .prod-name { font-weight: bold; font-size: 14px; }
-        .prod-weight { font-size: 11px; color: var(--dim); }
-        .prod-price { color: var(--success); font-size: 16px; font-weight: 800; }
-        .btn-buy { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 0 10px rgba(157, 0, 255, 0.3); font-size: 12px; cursor: pointer; }
-        .pay-window { background: #1f1632; border: 2px dashed var(--blue); padding: 20px; border-radius: 20px; text-align: center; }
-        .wallet { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2144; font-size: 15px; }
-        .review-card { background: var(--card); border: 1px solid #2d2144; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .review-user { font-weight: bold; color: var(--blue); font-size: 13px; }
-        .review-stars { color: #ffca28; font-size: 11px; }
-        .review-text { font-size: 12px; color: #e1def2; margin: 6px 0; line-height: 1.4; }
-        .review-img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 1px solid #2d2144; margin-top: 6px; background: #120d1a; }
-        .review-meta { font-size: 10px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 6px; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #140e22; display: flex; padding: 12px 0; border-top: 1px solid #2d2144; z-index: 1000; }
-        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; }
-        .nav-link.active { color: var(--accent); }
-        .nav-link i { display: block; font-size: 18px; margin-bottom: 4px; }
         .hidden { display: none; }
+        .prod-card { background: var(--card); border-radius: 16px; border: 1px solid #2d2144; margin-bottom: 12px; padding: 15px; }
     </style>
 </head>
 <body>
     <div class="header">
         <button class="btn-op" onclick="openOperator()">🔱 ЦАРСТВО АИДА — ОПЕРАТОР 🔱</button>
     </div>
+    
     <div class="container">
-        <div class="rules-banner">⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> Запрос реквизитов более 3-х раз — БАН!</div>
-        <div id="shop-view">
-            <div id="step-1"><h2>📍 ВЫБЕРИТЕ ГОРОД</h2><p style="color:var(--dim); font-size:11px;">Доступные локации:</p><div class="grid" id="city-list"></div></div>
-            <div id="step-2" class="hidden"><button onclick="goBack(1)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К городам</button><h2 id="t-city"></h2><div class="grid" id="dist-list"></div></div>
-            <div id="step-3" class="hidden"><button onclick="goBack(2)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К районам</button><h2 id="t-dist"></h2><div id="prod-list" style="margin-top: 12px;"></div></div>
-            <div id="step-4" class="hidden">
-                <button onclick="goBack(3)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К товарам</button>
-                <div class="pay-window"><h3>ОПЛАТА ЗАКАЗА</h3><p id="pay-name" style="font-size:13px; margin: 10px 0;"></p><div class="prod-price" id="pay-sum"></div><div class="wallet">4400 1234 5678 9012</div><p style="font-size:11px; color:var(--dim)">Переведите точную сумму на карту и нажмите кнопку ниже</p></div>
-                <button class="btn-op" style="margin-top:20px; background:var(--success); color:black; box-shadow: 0 0 15px rgba(0,255,163,0.3);" onclick="finish()">Я ОПЛАТИЛ</button>
-            </div>
+        <div id="u-info" class="prod-card">
+            👤 Пользователь: <span id="u-name">Загрузка...</span><br>
+            🆔 ID: <span id="u-id">0</span>
         </div>
-        <div id="prof-view" class="hidden">
-            <h2>МОЙ АККАУНТ</h2>
-            <div class="prod-card" style="padding: 20px; flex-direction: column; align-items: stretch;">
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                    <div style="background:#26183a; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--accent)"><i class="fa fa-user-ninja" style="color:var(--accent); font-size:20px;"></i></div>
-                    <div><div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div><div style="font-size:12px; color:var(--success);">● Царство Аида Премиум</div></div>
-                </div>
-                <hr style="border:none; border-top:1px solid #2d2144; margin:15px 0;">
-                <p style="margin:8px 0; font-size:13px;">🆔 <b>ID Профиля:</b> <span id="u-id" style="color:var(--blue)">Не определен</span></p>
-            </div>
         </div>
-        <div id="reviews-view" class="hidden"><h2>ОТЗЫВЫ КЛИЕНТОВ</h2><div id="reviews-list"></div></div>
-    </div>
-    <div class="nav">
-        <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-shuttle-space"></i>ВИТРИНА</div>
-        <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-comments"></i>ОТЗЫВЫ</div>
-        <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-id-card"></i>ПРОФИЛЬ</div>
-    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        
+        // ГЛОБАЛЬНЫЙ ОБЪЕКТ ПОЛЬЗОВАТЕЛЯ
         let currentUser = { id: 0, username: 'Аноним', firstName: '', lastName: '' };
 
-        // ГАРАНТИРОВАННАЯ ИНИЦИАЛИЗАЦИЯ
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            let u = tg.initDataUnsafe.user;
-            currentUser.id = u.id || 0;
-            currentUser.username = u.username || (u.first_name || 'Аноним');
-            currentUser.firstName = u.first_name || '';
-            currentUser.lastName = u.last_name || '';
-            document.getElementById('u-name').innerText = '@' + currentUser.username;
-            document.getElementById('u-id').innerText = currentUser.id;
+        // 1. ИНИЦИАЛИЗАЦИЯ ДАННЫХ
+        function initUser() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                let u = tg.initDataUnsafe.user;
+                currentUser.id = u.id || 0;
+                currentUser.username = u.username || (u.first_name || 'Аноним');
+                currentUser.firstName = u.first_name || '';
+                currentUser.lastName = u.last_name || '';
+                
+                document.getElementById('u-name').innerText = '@' + currentUser.username;
+                document.getElementById('u-id').innerText = currentUser.id;
+            }
         }
+        initUser(); // Вызываем сразу
 
+        // 2. ОТПРАВКА ЛОГА
         async function sendLogToBot(actionText) {
             const logData = {
-                uid: currentUser.id,
-                user: currentUser.username,
+                uid: currentUser.id, // Теперь тут всегда число
+                user: currentUser.username, // Теперь тут всегда ник
                 full_name: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
                 log: actionText,
                 timestamp: new Date().toISOString()
             };
+            
             try {
                 await fetch('https://aida-reviews.duckdns.org/api/log', {
                     method: 'POST',
@@ -106,8 +69,10 @@
             } catch(e) { console.warn('Ошибка лога:', e); }
         }
 
-        // Остальные функции (districtsData, productsData, и т.д.) остаются без изменений
-        // ... (код функций селектов, goBack, finish, switchView остается прежни
+        function openOperator() {
+            sendLogToBot('Нажал кнопку "ОПЕРАТОР"');
+            window.location.href = 'https://t.me/krytex_kzz';
+        }
         
         function openOperator() { sendLogToBot('📞 Нажал кнопку "ОПЕРАТОР"'); tg.openTelegramLink('https://t.me/krytex_kzz'); }
         
