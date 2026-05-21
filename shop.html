@@ -43,12 +43,8 @@
     <div class="header">
         <button class="btn-op" onclick="openOperator()">🔱 ЦАРСТВО АИДА — ОПЕРАТОР 🔱</button>
     </div>
-    
     <div class="container">
-        <div class="rules-banner">
-            ⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> Запрос реквизитов более 3-х раз — БАН!
-        </div>
-
+        <div class="rules-banner">⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> Запрос реквизитов более 3-х раз — БАН!</div>
         <div id="shop-view">
             <div id="step-1"><h2>📍 ВЫБЕРИТЕ ГОРОД</h2><p style="color:var(--dim); font-size:11px;">Доступные локации:</p><div class="grid" id="city-list"></div></div>
             <div id="step-2" class="hidden"><button onclick="goBack(1)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К городам</button><h2 id="t-city"></h2><div class="grid" id="dist-list"></div></div>
@@ -59,78 +55,59 @@
                 <button class="btn-op" style="margin-top:20px; background:var(--success); color:black; box-shadow: 0 0 15px rgba(0,255,163,0.3);" onclick="finish()">Я ОПЛАТИЛ</button>
             </div>
         </div>
-
         <div id="prof-view" class="hidden">
             <h2>МОЙ АККАУНТ</h2>
             <div class="prod-card" style="padding: 20px; flex-direction: column; align-items: stretch;">
                 <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                    <div style="background:#26183a; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--accent)">
-                        <i class="fa fa-user-ninja" style="color:var(--accent); font-size:20px;"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div>
-                        <div style="font-size:12px; color:var(--success);">● Царство Аида Премиум</div>
-                    </div>
+                    <div style="background:#26183a; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--accent)"><i class="fa fa-user-ninja" style="color:var(--accent); font-size:20px;"></i></div>
+                    <div><div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div><div style="font-size:12px; color:var(--success);">● Царство Аида Премиум</div></div>
                 </div>
                 <hr style="border:none; border-top:1px solid #2d2144; margin:15px 0;">
                 <p style="margin:8px 0; font-size:13px;">🆔 <b>ID Профиля:</b> <span id="u-id" style="color:var(--blue)">Не определен</span></p>
-                <p style="margin:8px 0; font-size:13px;">💰 <b>Баланс:</b> <span style="color:var(--success)">0 ₸</span></p>
-                <p style="margin:8px 0; font-size:13px;">📦 <b>Покупок совершено:</b> 0 шт.</p>
             </div>
         </div>
-
-        <div id="reviews-view" class="hidden">
-            <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
-            <p style="color:var(--dim); font-size:11px; margin-bottom:15px;">Реальные отзывы покупателей</p>
-            <div id="reviews-list"></div>
-        </div>
+        <div id="reviews-view" class="hidden"><h2>ОТЗЫВЫ КЛИЕНТОВ</h2><div id="reviews-list"></div></div>
     </div>
-
     <div class="nav">
         <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-shuttle-space"></i>ВИТРИНА</div>
         <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-comments"></i>ОТЗЫВЫ</div>
         <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-id-card"></i>ПРОФИЛЬ</div>
     </div>
-
     <script>
-        let tg = window.Telegram.WebApp; 
+        let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        let selectedCity = "";
-        let selectedDistrict = "";
-        let selectedProduct = null;
-        let currentUser = { id: null, username: null, firstName: null, lastName: null };
+        let currentUser = { id: 0, username: 'Аноним', firstName: '', lastName: '' };
 
-        try {
-            if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                let u = tg.initDataUnsafe.user;
-                currentUser.id = u.id;
-                currentUser.username = u.username || null;
-                currentUser.firstName = u.first_name || '';
-                currentUser.lastName = u.last_name || '';
-                document.getElementById('u-name').innerText = u.username ? '@' + u.username : (u.first_name + ' ' + (u.last_name || ''));
-                document.getElementById('u-id').innerText = u.id;
-            }
-        } catch(e) { console.error(e); }
-        
+        // ГАРАНТИРОВАННАЯ ИНИЦИАЛИЗАЦИЯ
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            let u = tg.initDataUnsafe.user;
+            currentUser.id = u.id || 0;
+            currentUser.username = u.username || (u.first_name || 'Аноним');
+            currentUser.firstName = u.first_name || '';
+            currentUser.lastName = u.last_name || '';
+            document.getElementById('u-name').innerText = '@' + currentUser.username;
+            document.getElementById('u-id').innerText = currentUser.id;
+        }
+
         async function sendLogToBot(actionText) {
-            if (!actionText) return;
             const logData = {
-                uid: currentUser.id || 'anon',
-                user: currentUser.username ? '@' + currentUser.username : (currentUser.firstName || 'Аноним'),
-                full_name: `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim(),
+                uid: currentUser.id,
+                user: currentUser.username,
+                full_name: `${currentUser.firstName} ${currentUser.lastName}`.trim(),
                 log: actionText,
                 timestamp: new Date().toISOString()
             };
-            
             try {
                 await fetch('https://aida-reviews.duckdns.org/api/log', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(logData)
                 });
-            } catch(e) { console.warn('⚠️ Ошибка лога:', e); }
+            } catch(e) { console.warn('Ошибка лога:', e); }
         }
+
+        // Остальные функции (districtsData, productsData, и т.д.) остаются без изменений
+        // ... (код функций селектов, goBack, finish, switchView остается прежни
         
         function openOperator() { sendLogToBot('📞 Нажал кнопку "ОПЕРАТОР"'); tg.openTelegramLink('https://t.me/krytex_kzz'); }
         
