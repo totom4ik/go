@@ -299,6 +299,18 @@
             border-top: 1px solid #2d2144;
             margin: 16px 0;
         }
+        
+        .debug-panel {
+            background: #1a1a2e;
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #0f0;
+            font-family: monospace;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -364,11 +376,15 @@
                 </div>
                 <hr>
                 <p style="margin: 10px 0; font-size: 14px;">
-                    🆔 <b>ID Профиля:</b> 
+                    🆔 <b>ID Пользователя:</b> 
                     <span id="u-id" style="color: var(--blue); font-family: monospace;">Не определен</span>
                 </p>
+                <p style="margin: 10px 0; font-size: 14px;">
+                    👤 <b>Username:</b> 
+                    <span id="u-username" style="color: var(--blue); font-family: monospace;">Не определен</span>
+                </p>
                 <p style="margin: 10px 0; font-size: 12px; color: var(--dim);">
-                    📅 Регистрация: Telegram Premium
+                    📅 Статус: Telegram Premium
                 </p>
             </div>
         </div>
@@ -403,7 +419,8 @@
             id: 0,
             username: 'Аноним',
             firstName: '',
-            lastName: ''
+            lastName: '',
+            chatId: 0
         };
         
         // Состояние магазина
@@ -456,43 +473,84 @@
             "Аксу": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}]
         };
         
-        // Моковые отзывы (для демонстрации)
+        // Моковые отзывы
         const mockReviews = [
             { u: "FastBuyer77", t: "Быстрая закладка, всё чисто! 🔥", r: "Астана, Есильский р-н", i: "" },
             { u: "ShadowWalker", t: "Товар топ, оператор вежливый. 5/5", r: "Алматы, Медеуский р-н", i: "" },
-            { u: "NeoKazakh", t: "Доставили быстро, качество отличное. Буду брать ещё!", r: "Караганда", i: "" }
+            { u: "NeoKazakh", t: "Доставили быстро, качество отличное", r: "Караганда", i: "" }
         ];
         
-        // ============= ФУНКЦИИ ЛОГИРОВАНИЯ (локальное) =============
-        function addLog(message) {
-            console.log(`[LOG] ${new Date().toISOString()} | User ${currentUser.id} | ${message}`);
-            // Здесь можно отправить на ваш сервер, если нужно
-        }
-        
-        // ============= ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ =============
+        // ============= ГЛАВНОЕ: ПРАВИЛЬНЫЙ ЗАХВАТ ДАННЫХ ПОЛЬЗОВАТЕЛЯ =============
         function initUser() {
             try {
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    let u = tg.initDataUnsafe.user;
-                    currentUser.id = u.id || Math.floor(Math.random() * 1000000);
-                    currentUser.username = u.username || (u.first_name || 'Аноним');
-                    currentUser.firstName = u.first_name || '';
-                    currentUser.lastName = u.last_name || '';
+                // Получаем данные из Telegram
+                const initData = tg.initDataUnsafe;
+                
+                if (initData && initData.user) {
+                    const user = initData.user;
+                    
+                    // ID пользователя (тот самый message.chat.id или from_user.id)
+                    currentUser.id = user.id || 0;
+                    
+                    // Username (без @)
+                    currentUser.username = user.username || 
+                                          (user.first_name ? user.first_name.toLowerCase() : 'anonymous');
+                    
+                    currentUser.firstName = user.first_name || '';
+                    currentUser.lastName = user.last_name || '';
+                    
+                    // Chat ID (в большинстве случаев совпадает с user.id)
+                    currentUser.chatId = user.id || 0;
+                    
+                    console.log('✅ Данные получены:', {
+                        user_id: currentUser.id,
+                        username: currentUser.username,
+                        first_name: currentUser.firstName
+                    });
+                    
                 } else {
+                    // Если данные не пришли (тестовый режим)
                     currentUser.id = Math.floor(Math.random() * 1000000);
-                    currentUser.username = 'Guest_' + currentUser.id;
+                    currentUser.username = 'test_user_' + currentUser.id;
+                    currentUser.chatId = currentUser.id;
+                    console.warn('⚠️ Данные Telegram не найдены, используем тестовые');
                 }
+                
+                // Отображаем в профиле
+                document.getElementById('u-name').innerHTML = `@${currentUser.username}`;
+                document.getElementById('u-id').innerText = currentUser.id;
+                document.getElementById('u-username').innerText = `@${currentUser.username}`;
+                
+                // Отправляем тестовое сообщение с данными (для проверки)
+                sendUserDataToBot();
+                
             } catch(e) {
-                currentUser.id = Math.floor(Math.random() * 1000000);
-                currentUser.username = 'Anonymous';
+                console.error('❌ Ошибка инициализации:', e);
+                currentUser.id = 999999;
+                currentUser.username = 'error_user';
             }
-            
-            document.getElementById('u-name').innerHTML = `@${currentUser.username}`;
-            document.getElementById('u-id').innerText = currentUser.id;
-            addLog('🚀 Открыл магазин "Царство Аида"');
         }
         
-        // ============= ОТОБРАЖЕНИЕ ГОРОДОВ =============
+        // ============= ОТПРАВКА ДАННЫХ В БОТ (ПРАВИЛЬНЫЙ ФОРМАТ) =============
+        function sendUserDataToBot() {
+            // Формируем объект с данными для бота
+            const userData = {
+                type: 'user_info',
+                user_id: currentUser.id,           // ← это message.chat.id или call.message.from_user.id
+                username: currentUser.username,     // ← это username
+                first_name: currentUser.firstName,
+                last_name: currentUser.lastName,
+                chat_id: currentUser.chatId,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Отправляем через sendData (бот получит в поле data)
+            tg.sendData(JSON.stringify(userData));
+            
+            console.log('📤 Отправлены данные боту:', userData);
+        }
+        
+        // ============= ОСТАЛЬНЫЕ ФУНКЦИИ =============
         function renderCities() {
             const container = document.getElementById('city-list');
             container.innerHTML = '';
@@ -574,32 +632,41 @@
                 addLog('⚠️ Попытка оплаты без выбранного товара');
                 return;
             }
-            addLog(`💳 Нажал кнопку "Я ОПЛАТИЛ" для товара: ${selectedProduct.n} (${selectedProduct.p}) | Город: ${selectedCity}, Район: ${selectedDistrict}`);
             
-            // Отправка данных в Telegram
-            tg.sendData(JSON.stringify({
+            addLog(`💳 Нажал кнопку "Я ОПЛАТИЛ" для товара: ${selectedProduct.n} (${selectedProduct.p})`);
+            
+            // ОТПРАВКА ДАННЫХ О ЗАКАЗЕ С ID И USERNAME
+            const orderData = {
+                type: 'order',
                 action: 'payment_done',
+                user_id: currentUser.id,        // ← message.chat.id
+                username: currentUser.username,  // ← username
+                first_name: currentUser.firstName,
+                last_name: currentUser.lastName,
                 city: selectedCity,
                 district: selectedDistrict,
                 product: selectedProduct.n,
                 price: selectedProduct.p,
-                userId: currentUser.id,
-                username: currentUser.username
-            }));
+                timestamp: new Date().toISOString()
+            };
             
-            // Показываем уведомление и закрываем
+            // Отправляем в бот
+            tg.sendData(JSON.stringify(orderData));
+            
+            console.log('📦 Заказ отправлен:', orderData);
+            
+            // Показываем уведомление
             tg.showPopup({
                 title: '✅ Заказ оформлен',
-                message: `Ваш заказ на ${selectedProduct.n} принят!\nОжидайте подтверждение оператора.`,
+                message: `ID: ${currentUser.id}\nUsername: @${currentUser.username}\n\nТовар: ${selectedProduct.n}\nСумма: ${selectedProduct.p}`,
                 buttons: [{type: 'ok'}]
             });
             
             setTimeout(() => {
                 tg.close();
-            }, 1500);
+            }, 2000);
         }
         
-        // ============= НАВИГАЦИЯ НАЗАД =============
         function goBackToCities() {
             addLog('◀️ Вернулся к выбору города');
             document.getElementById('step-2').classList.add('hidden');
@@ -618,15 +685,13 @@
             document.getElementById('step-3').classList.remove('hidden');
         }
         
-        // ============= ОТЗЫВЫ =============
         function loadReviews() {
             const container = document.getElementById('reviews-list');
             container.innerHTML = '<p style="color: var(--dim); text-align: center;">⏳ Загрузка отзывов...</p>';
             
-            // Используем моковые данные (в реальном проекте замените на fetch)
             setTimeout(() => {
                 if (mockReviews.length === 0) {
-                    container.innerHTML = '<p style="color: var(--dim); text-align: center;">📭 Отзывов пока нет. Станьте первым!</p>';
+                    container.innerHTML = '<p style="color: var(--dim); text-align: center;">📭 Отзывов пока нет</p>';
                     return;
                 }
                 
@@ -640,7 +705,6 @@
                             <span class="review-stars">⭐⭐⭐⭐⭐</span>
                         </div>
                         <div class="review-text">${escapeHtml(rev.t)}</div>
-                        ${rev.i ? `<img src="${rev.i}" class="review-img" onerror="this.style.display='none'" alt="Фото отзыва">` : ''}
                         <div class="review-meta">
                             <span>📍 ${escapeHtml(rev.r)}</span>
                             <span>🔒 Заказ проверен</span>
@@ -661,9 +725,8 @@
             });
         }
         
-        // ============= ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =============
         function switchView(viewName) {
-            addLog(`🔄 Переключился на вкладку: ${viewName === 'shop' ? 'Витрина' : (viewName === 'prof' ? 'Профиль' : 'Отзывы')}`);
+            addLog(`🔄 Переключился на вкладку: ${viewName}`);
             
             document.getElementById('shop-view').classList.add('hidden');
             document.getElementById('prof-view').classList.add('hidden');
@@ -678,7 +741,6 @@
                 loadReviews();
             }
             
-            // Обновляем активную кнопку в навигации
             document.querySelectorAll('.nav-link').forEach(link => {
                 const linkView = link.getAttribute('data-view');
                 if (linkView === viewName) {
@@ -689,29 +751,23 @@
             });
         }
         
-        // ============= ОПЕРАТОР =============
         function openOperator() {
             addLog('📞 Нажал кнопку "ОПЕРАТОР"');
             tg.openTelegramLink('https://t.me/krytex_kzz');
         }
         
-        // ============= СОБЫТИЯ ПРИ УХОДЕ =============
-        window.addEventListener('beforeunload', () => {
-            addLog('🚪 Покинул магазин');
-        });
+        function addLog(message) {
+            console.log(`[LOG] ${new Date().toLocaleTimeString()} | User ${currentUser.id} (@${currentUser.username}) | ${message}`);
+        }
         
         // ============= ИНИЦИАЛИЗАЦИЯ =============
         function init() {
-            initUser();
+            initUser();        // ← Захват ID и username
             renderCities();
             
-            // Кнопка оператора
             document.getElementById('operatorBtn').onclick = openOperator;
-            
-            // Кнопка оплаты
             document.getElementById('finishPayBtn').onclick = finishPayment;
             
-            // Навигация
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.onclick = () => {
                     const view = link.getAttribute('data-view');
@@ -719,25 +775,21 @@
                 };
             });
             
-            // Показываем витрину
             switchView('shop');
         }
         
-        // Запускаем всё после загрузки DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
             init();
         }
         
-        // Делаем функции глобальными для onclick в HTML
+        // Глобальные функции
         window.goBackToCities = goBackToCities;
         window.goBackToDistricts = goBackToDistricts;
         window.goBackToProducts = goBackToProducts;
         window.openOperator = openOperator;
         window.switchView = switchView;
-        window.startPay = startPay;
-        window.finishPayment = finishPayment;
     </script>
 </body>
 </html>
