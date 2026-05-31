@@ -110,6 +110,9 @@
                 currentUser.lastName = u.last_name || '';
                 document.getElementById('u-name').innerText = u.username ? '@' + u.username : (u.first_name + ' ' + (u.last_name || ''));
                 document.getElementById('u-id').innerText = u.id;
+            } else {
+                // Фоллбек для тестов вне ТГ
+                currentUser.id = "anon_" + Math.floor(Math.random() * 100000);
             }
         } catch(e) { console.error(e); }
         
@@ -122,7 +125,6 @@
                 log: actionText,
                 timestamp: new Date().toISOString()
             };
-            
             try {
                 await fetch('https://aida-reviews.duckdns.org/api/log', {
                     method: 'POST',
@@ -132,145 +134,119 @@
             } catch(e) { console.warn('⚠️ Ошибка лога:', e); }
         }
         
-        function openOperator() { sendLogToBot('📞 Нажал кнопку "ОПЕРАТОР"'); tg.openTelegramLink('https://t.me/krytex_kzz'); }
+        function openOperator() { 
+            sendLogToBot('📞 Нажал кнопку "ОПЕРАТОР"'); 
+            tg.openTelegramLink('https://t.me/krytex_kzz'); 
+        }
         
         const districtsData = {
             "Астана": ["Есильский р-н", "Алматы р-н", "Сарыарка р-н", "Байконур р-н", "Нура р-н"],
-            "Алматы": ["Медеуский р-н", "Алмалинский р-н", "Бостандыкский р-н", "Ауэзовский р-н", "Жетысуский р-н", "Турксибский р-н"],
-            "Алаколь": ["Центральный пляж", "Курортная зона", "Побережье"],
-            "Бесагаш": ["Нижняя зона", "Верхняя зона", "Въезд"],
-            "Актау": ["1-15 микрорайоны", "16-30 микрорайоны", "Прибрежный р-н", "Верхняя зона"],
-            "Актобе": ["Старый город", "11-12 микрорайоны", "Район Шанхай", "Болашак / Сазда"],
-            "Атырау": ["Авангард", "Привокзальный", "Жилгородок", "Нурсая", "Центр"],
-            "Караганда": ["Казыбек Би р-н", "Юго-Восток", "Майкудук", "Пришахтинск"],
-            "Темиртау": ["Правый берег", "Соцгород", "68-й квартал", "9-й микрорайон"],
-            "Семей": ["Центр", "Новостройка", "Левый берег", "Океан"],
-            "Саран": ["Центральный р-н", "Шахтерский поселок"],
-            "Жезказган": ["Площадь", "Прибрежный", "МКР Космонавтов"],
-            "Павлодар": ["Химгородки", "Усолка", "Дачный", "Диспетчерская", "Центр"],
-            "Экибастуз": ["1-й Южный", "2-й Южный", "Центральный"],
-            "Костанай": ["КЖБИ", "Центр", "Западный", "Северо-Запад"],
-            "Шымкент": ["Аль-Фараби р-н", "Абайский р-н", "Енбекшинский р-н", "Каратауский р-н"],
-            "Тараз": ["1-6 микрорайоны", "7-12 микрорайоны", "Химпоселок", "Центр"],
-            "Кызылорда": ["Шугла", "Арай", "Титов", "Центр"],
-            "Аксу": ["Старый город", "Центральный р-н"]
+            "Алматы": ["Медеуский р-н", "Алмалинский р-н", "Бостандыкский р-н", "Ауэзовский р-н"],
+            "Актау": ["1-15 микрорайоны", "16-30 микрорайоны", "Прибрежный р-н"]
         };
-
+        
         const productsData = {
-            "Астана": [{n:"💎 MEOW NEW CRYS", p:"18.000 ₸", w:"1г"}, {n:"⚡ BIG MEOW", p:"15.000 ₸", w:"1г"}, {n:"🧪 MEOW", p:"18.000 ₸", w:"1г"}, {n:"💊 MDMA", p:"20.000 ₸", w:"0.5г"}, {n:"❄️ COCAINE", p:"80.000 ₸", w:"1г"}, {n:"🌀 KETAMIN", p:"15.000 ₸", w:"0.5г"}, {n:"👁 LSD", p:"20.000 ₸", w:"1шт"}, {n:"🍯 WAX", p:"19.000 ₸", w:"0.5г"}, {n:"🍁 Styx OG SORT", p:"26.000 ₸", w:"1г"}, {n:"🔮 EXTAZY", p:"20.000 ₸", w:"1шт"}],
-            "Алматы": [{n:"💎 MEOW", p:"18.000 ₸", w:"1г"}, {n:"🍫 HASH", p:"15.000 ₸", w:"2г"}, {n:"🍯 WAX", p:"19.000 ₸", w:"0.5г"}, {n:"🍁 Styx OG SORT", p:"23.000 ₸", w:"1г"}],
-            "Алаколь": [{n:"💎 MEOW", p:"23.000 ₸", w:"1г"}],
-            "Бесагаш": [{n:"💎 MEOW", p:"19.000 ₸", w:"1г"}, {n:"🍫 HASH", p:"9.000 ₸", w:"1г"}],
-            "Актау": [{n:"💎 MEOW", p:"24.000 ₸", w:"1г"}],
-            "Актобе": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}, {n:"⚡ AMFETAMIN", p:"18.000 ₸", w:"1г"}, {n:"💊 MDMA", p:"30.000 ₸", w:"0.5г"}, {n:"👁 LSD", p:"25.000 ₸", w:"1шт"}],
-            "Атырау": [{n:"💎 MEOW", p:"26.000 ₸", w:"1г"}],
-            "Караганда": [{n:"💎 MEOW", p:"18.000 ₸", w:"1г"}, {n:"🍫 HASH", p:"18.000 ₸", w:"1г"}],
-            "Темиртау": [{n:"💎 MEOW", p:"19.000 ₸", w:"1г"}],
-            "Семей": [{n:"💎 MEOW", p:"30.000 ₸", w:"1г"}, {n:"🍁 Styx OG SORT", p:"28.000 ₸", w:"1г"}],
-            "Саран": [{n:"💎 MEOW", p:"20.000 ₸", w:"1г"}],
-            "Жезказган": [{n:"💎 MEOW", p:"20.000 ₸", w:"1г"}],
-            "Павлодар": [{n:"💎 MEOW NEW CRYS", p:"18.000 ₸", w:"1г"}, {n:"🌀 KETAMIN", p:"15.000 ₸", w:"0.5г"}, {n:"🍫 HASH", p:"15.000 ₸", w:"1г"}],
-            "Экибастуз": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}],
-            "Костанай": [{n:"💊 MDMA", p:"15.000 ₸", w:"0.5г"}],
-            "Шымкент": [{n:"💎 MEOW", p:"18.000 ₸", w:"1г"}],
-            "Тараз": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}],
-            "Кызылорда": [{n:"💊 XANAX", p:"20.000 ₸", w:"3шт"}],
-            "Аксу": [{n:"💎 MEOW", p:"22.000 ₸", w:"1г"}]
+            "💎 MEOW NEW CRYS": "18.000 ₸",
+            "⚡ BIG MEOW": "15.000 ₸",
+            "❄️ COCAINE": "80.000 ₸",
+            "🔮 EXTAZY": "20.000 ₸"
         };
 
-        function initCities() {
-            const container = document.getElementById('city-list');
+        function initShop() {
+            let container = document.getElementById('city-list');
             container.innerHTML = "";
             Object.keys(districtsData).forEach(city => {
                 let div = document.createElement('div');
                 div.className = "card-item";
-                div.innerText = "🏙 " + city;
+                div.innerText = city;
                 div.onclick = () => selectCity(city);
                 container.appendChild(div);
             });
-            sendLogToBot('🚀 Открыл магазин "Царство Аида"');
         }
 
         function selectCity(city) {
             selectedCity = city;
             sendLogToBot(`🏙 Выбрал город: ${city}`);
-            document.getElementById('t-city').innerText = `📍 ${city.toUpperCase()} — ВЫБЕРИТЕ РАЙОН`;
-            const container = document.getElementById('dist-list');
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+            document.getElementById('t-city').innerText = city.toUpperCase();
+            
+            let container = document.getElementById('dist-list');
             container.innerHTML = "";
             districtsData[city].forEach(dist => {
                 let div = document.createElement('div');
                 div.className = "card-item";
-                div.innerText = "🏘 " + dist;
+                div.innerText = dist;
                 div.onclick = () => selectDistrict(dist);
                 container.appendChild(div);
             });
-            document.getElementById('step-1').classList.add('hidden');
-            document.getElementById('step-2').classList.remove('hidden');
         }
 
         function selectDistrict(dist) {
             selectedDistrict = dist;
             sendLogToBot(`📍 Выбрал район: ${dist} (Город: ${selectedCity})`);
-            document.getElementById('t-dist').innerText = `🎁 ${selectedCity} / ${dist}`;
-            const container = document.getElementById('prod-list');
-            container.innerHTML = "";
-            let prods = productsData[selectedCity] || productsData["Алматы"];
-            prods.forEach(p => {
-                let card = document.createElement('div');
-                card.className = "prod-card";
-                card.innerHTML = `
-                    <div class="prod-info"><span class="prod-name">${p.n}</span><span class="prod-weight">⚖️ Вес: ${p.w} | 📦 Клад: Готовый</span></div>
-                    <div style="text-align: right;"><div class="prod-price">${p.p}</div><button class="btn-buy" onclick="startPay('${p.n.replace(/'/g, "\\'")}', '${p.p}')">Купить</button></div>
-                `;
-                container.appendChild(card);
-            });
             document.getElementById('step-2').classList.add('hidden');
             document.getElementById('step-3').classList.remove('hidden');
+            document.getElementById('t-dist').innerText = dist.toUpperCase();
+            
+            let container = document.getElementById('prod-list');
+            container.innerHTML = "";
+            Object.keys(productsData).forEach(pName => {
+                let price = productsData[pName];
+                let div = document.createElement('div');
+                div.className = "prod-card";
+                div.innerHTML = `<div class="prod-info"><span class="prod-name">${pName}</span><span class="prod-weight">⚖️ 1г</span><span class="prod-price">${price}</span></div><button class="btn-buy" onclick="checkout('${pName}', '${price}')">Купить</button>`;
+                container.appendChild(div);
+            });
         }
 
-        function startPay(name, price) {
-            selectedProduct = { n: name, p: price };
-            sendLogToBot(`🛒 Нажал "Купить" на товар: ${name} (${price}) | Локация: ${selectedCity}, ${selectedDistrict}`);
-            document.getElementById('pay-name').innerHTML = `<b>Товар:</b> ${name}<br><b>Локация:</b> ${selectedCity}, ${selectedDistrict}`;
-            document.getElementById('pay-sum').innerText = price;
+        function checkout(pName, price) {
+            selectedProduct = { name: pName, price: price };
+            sendLogToBot(`🛒 Перешел к оплате товара: ${pName} (${price})`);
             document.getElementById('step-3').classList.add('hidden');
             document.getElementById('step-4').classList.remove('hidden');
-        }
-
-        function goBack(step) {
-            if(step === 1) { sendLogToBot('◀️ Вернулся к выбору города'); document.getElementById('step-2').classList.add('hidden'); document.getElementById('step-1').classList.remove('hidden'); }
-            else if(step === 2) { sendLogToBot('◀️ Вернулся к выбору района'); document.getElementById('step-3').classList.add('hidden'); document.getElementById('step-2').classList.remove('hidden'); }
-            else if(step === 3) { sendLogToBot('◀️ Вернулся к выбору товара'); document.getElementById('step-4').classList.add('hidden'); document.getElementById('step-3').classList.remove('hidden'); }
+            document.getElementById('pay-name').innerText = `${pName} — ${selectedCity}, ${selectedDistrict}`;
+            document.getElementById('pay-sum').innerText = price;
         }
 
         function finish() {
-            if (!selectedProduct) return;
-            sendLogToBot(`💳 Нажал кнопку "Я ОПЛАТИЛ" для товара: ${selectedProduct.n} (${selectedProduct.p}) | Город: ${selectedCity}, Район: ${selectedDistrict}`);
-            tg.sendData(`DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.n}|${selectedProduct.p}`);
+            sendLogToBot(`💳 Нажал кнопку "Я ОПЛАТИЛ" для ${selectedProduct.name}`);
+            let dataStr = `DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.name}|${selectedProduct.price}`;
+            tg.sendData(dataStr);
             tg.close();
         }
 
-        function switchView(view, el) {
-            let viewName = view === 'shop' ? 'Витрина' : (view === 'prof' ? 'Профиль' : 'Отзывы');
-            sendLogToBot(`🔄 Переключился на вкладку: ${viewName}`);
+        function goBack(step) {
+            if(step === 1) {
+                document.getElementById('step-2').classList.add('hidden');
+                document.getElementById('step-1').classList.remove('hidden');
+            } else if(step === 2) {
+                document.getElementById('step-3').classList.add('hidden');
+                document.getElementById('step-2').classList.remove('hidden');
+            } else if(step === 3) {
+                document.getElementById('step-4').classList.add('hidden');
+                document.getElementById('step-3').classList.remove('hidden');
+            }
+        }
+
+        function switchView(view, elem) {
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            elem.classList.add('active');
             document.getElementById('shop-view').classList.add('hidden');
             document.getElementById('prof-view').classList.add('hidden');
             document.getElementById('reviews-view').classList.add('hidden');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            el.classList.add('active');
-            if(view === 'shop') document.getElementById('shop-view').classList.remove('hidden');
-            else if(view === 'prof') document.getElementById('prof-view').classList.remove('hidden');
-            else if(view === 'reviews') { document.getElementById('reviews-view').classList.remove('hidden'); loadReviewsFromServer(); }
+            document.getElementById(`${view}-view`).classList.remove('hidden');
+            if(view === 'reviews') loadReviews();
         }
 
-        function loadReviewsFromServer() {
-            const container = document.getElementById('reviews-list');
+        function loadReviews() {
+            let container = document.getElementById('reviews-list');
             container.innerHTML = "<p style='color:var(--dim); font-size:12px;'>Загрузка отзывов...</p>";
             fetch('https://aida-reviews.duckdns.org/api/reviews')
                 .then(res => res.json())
                 .then(data => {
                     container.innerHTML = "";
-                    if(!data || data.length === 0) { container.innerHTML = "<p style='color:var(--dim); font-size:12px;'>Отзывов пока нет. Станьте первым!</p>"; return; }
+                    if(!data || data.length === 0) { container.innerHTML = "<p style='color:var(--dim); font-size:12px;'>Отзывов пока нет.</p>"; return; }
                     data.forEach(rev => {
                         let div = document.createElement('div');
                         div.className = "review-card";
@@ -282,8 +258,8 @@
                 .catch(err => { container.innerHTML = "<p style='color:var(--danger); font-size:12px;'>Ошибка загрузки отзывов.</p>"; });
         }
 
-        window.addEventListener('beforeunload', () => sendLogToBot('🚪 Покинул магазин'));
-        initCities();
+        // Старт витрины
+        initShop();
     </script>
 </body>
 </html>
