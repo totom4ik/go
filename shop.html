@@ -42,8 +42,8 @@
         .hidden { display: none; }
         .back-btn { background: none; color: var(--blue); border: none; margin-bottom: 15px; font-weight: bold; padding: 8px 0; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .loading { text-align: center; padding: 20px; color: var(--dim); }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .loading i { animation: pulse 1s infinite; }
+        .error { color: var(--danger); text-align: center; padding: 20px; }
+        .empty { color: var(--dim); text-align: center; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -118,7 +118,9 @@
     </div>
 
     <script>
-        const API_BASE = 'http://5.180.183.22:8080';
+        // ИСПРАВЛЕНО: данные загружаются с сервера!
+        const API_BASE = 'http://5.180.183.22:8080'; // <--- ВАШ IP СЕРВЕРА
+        
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
@@ -145,45 +147,28 @@
             }
         } catch(e) { console.error(e); }
         
-        // Функции API
+        // ========== ЗАГРУЗКА ТОВАРОВ С СЕРВЕРА ==========
         async function loadProductsFromServer() {
+            const container = document.getElementById('city-list');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка городов...</div>';
+            
             try {
                 const response = await fetch(`${API_BASE}/api/products`);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                
                 const data = await response.json();
-                if (data && data.cities) {
+                console.log('Products loaded:', data);
+                
+                if (data && data.cities && Object.keys(data.cities).length > 0) {
                     productsData = data;
                     renderCityList();
                 } else {
-                    useDefaultProducts();
+                    container.innerHTML = '<div class="empty">Нет доступных городов. Добавьте в админ-панели.</div>';
                 }
             } catch(e) {
                 console.error('Error loading products:', e);
-                useDefaultProducts();
+                container.innerHTML = '<div class="error">❌ Ошибка загрузки данных. Проверьте соединение с сервером.</div>';
             }
-        }
-        
-        function useDefaultProducts() {
-            productsData = {
-                "cities": {
-                    "Алматы": {
-                        "districts": ["Медеуский", "Алмалинский", "Бостандыкский", "Ауэзовский"],
-                        "items": [
-                            {"name": "MEOW NEW CRYS", "price": 18000},
-                            {"name": "BIG MEOW", "price": 15000},
-                            {"name": "COCAINE", "price": 80000},
-                            {"name": "ECSTASY", "price": 20000}
-                        ]
-                    },
-                    "Астана": {
-                        "districts": ["Есильский", "Алматы", "Сарыарка", "Байконур"],
-                        "items": [
-                            {"name": "MEOW NEW CRYS", "price": 18000},
-                            {"name": "BIG MEOW", "price": 15000}
-                        ]
-                    }
-                }
-            };
-            renderCityList();
         }
         
         function renderCityList() {
@@ -192,7 +177,7 @@
             const cities = Object.keys(productsData.cities);
             
             if (cities.length === 0) {
-                container.innerHTML = "<p style='color:var(--dim);'>Нет доступных городов</p>";
+                container.innerHTML = '<div class="empty">Нет доступных городов</div>';
                 return;
             }
             
@@ -211,11 +196,16 @@
             
             document.getElementById('step-1').classList.add('hidden');
             document.getElementById('step-2').classList.remove('hidden');
-            document.getElementById('t-city').innerText = city.toUpperCase();
+            document.getElementById('t-city').innerHTML = city.toUpperCase();
             
             const container = document.getElementById('dist-list');
             container.innerHTML = "";
             const districts = productsData.cities[city]?.districts || [];
+            
+            if (districts.length === 0) {
+                container.innerHTML = '<div class="empty">Нет районов</div>';
+                return;
+            }
             
             districts.forEach(dist => {
                 let div = document.createElement('div');
@@ -238,16 +228,21 @@
             container.innerHTML = "";
             const items = productsData.cities[selectedCity]?.items || [];
             
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty">Нет товаров в этом районе</div>';
+                return;
+            }
+            
             items.forEach(item => {
                 let div = document.createElement('div');
                 div.className = "prod-card";
                 div.innerHTML = `
                     <div class="prod-info">
-                        <span class="prod-name">${item.name}</span>
+                        <span class="prod-name">${escapeHtml(item.name)}</span>
                         <span class="prod-desc">⚖️ 1 грамм</span>
                         <span class="prod-price">${item.price.toLocaleString()} ₸</span>
                     </div>
-                    <button class="btn-buy" onclick="checkout('${item.name.replace(/'/g, "\\'")}', ${item.price})">Купить</button>
+                    <button class="btn-buy" onclick="checkout('${escapeHtml(item.name).replace(/'/g, "\\'")}', ${item.price})">Купить</button>
                 `;
                 container.appendChild(div);
             });
@@ -259,7 +254,7 @@
             
             document.getElementById('step-3').classList.add('hidden');
             document.getElementById('step-4').classList.remove('hidden');
-            document.getElementById('pay-name').innerHTML = `${pName}<br><span style="font-size:12px; color:var(--dim);">${selectedCity}, ${selectedDistrict}</span>`;
+            document.getElementById('pay-name').innerHTML = `${escapeHtml(pName)}<br><span style="font-size:12px; color:var(--dim);">${escapeHtml(selectedCity)}, ${escapeHtml(selectedDistrict)}</span>`;
             document.getElementById('pay-sum').innerHTML = `${price.toLocaleString()} ₸`;
         }
         
@@ -285,18 +280,21 @@
             }
         }
         
-        // Отзывы
+        // ========== ЗАГРУЗКА ОТЗЫВОВ С СЕРВЕРА ==========
         async function loadReviews() {
             const container = document.getElementById('reviews-list');
             container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка отзывов...</div>';
             
             try {
                 const response = await fetch(`${API_BASE}/api/reviews`);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                
                 const data = await response.json();
+                console.log('Reviews loaded:', data);
                 container.innerHTML = "";
                 
                 if (!data || data.length === 0) {
-                    container.innerHTML = "<p style='color:var(--dim); text-align:center;'>⭐ Отзывов пока нет. Будьте первым!</p>";
+                    container.innerHTML = '<div class="empty">⭐ Отзывов пока нет. Будьте первым!</div>';
                     return;
                 }
                 
@@ -304,14 +302,13 @@
                     let div = document.createElement('div');
                     div.className = "review-card";
                     const stars = '⭐'.repeat(rev.s || 5);
-                    const reviewText = escapeHtml(rev.t || '');
                     
                     div.innerHTML = `
                         <div class="review-header">
                             <span class="review-user">👤 ${escapeHtml(rev.u || 'Покупатель')}</span>
                             <span class="review-stars">${stars}</span>
                         </div>
-                        <div class="review-text">${reviewText}</div>
+                        <div class="review-text">${escapeHtml(rev.t || '')}</div>
                         ${rev.i ? `<img src="${rev.i}" class="review-img" onerror="this.style.display='none'" loading="lazy">` : ''}
                         <div class="review-meta">
                             <span>📍 ${escapeHtml(rev.r || 'Не указано')}</span>
@@ -322,11 +319,12 @@
                 });
             } catch(e) {
                 console.error('Error loading reviews:', e);
-                container.innerHTML = "<p style='color:var(--danger); text-align:center;'>❌ Ошибка загрузки отзывов</p>";
+                container.innerHTML = '<div class="error">❌ Ошибка загрузки отзывов. Проверьте соединение с сервером.</div>';
             }
         }
         
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -370,7 +368,7 @@
             }
         }
         
-        // Инициализация
+        // Инициализация - загружаем данные с сервера
         loadProductsFromServer();
     </script>
 </body>
