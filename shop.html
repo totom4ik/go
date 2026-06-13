@@ -8,35 +8,42 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0d0914; --card: #171125; --accent: #9d00ff; --blue: #00d4ff; --text: #ffffff; --dim: #8b809c; --success: #00ffa3; --danger: #ff2d55; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         .header { position: sticky; top: 0; z-index: 1000; background: rgba(13, 9, 20, 0.95); backdrop-filter: blur(10px); padding: 12px; border-bottom: 2px solid var(--accent); text-align: center; }
-        .btn-op { background: linear-gradient(90deg, var(--accent), #bd5eff); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; text-transform: uppercase; box-shadow: 0 0 15px rgba(157, 0, 255, 0.4); cursor: pointer; }
+        .btn-op { background: linear-gradient(90deg, var(--accent), #bd5eff); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .btn-op:active { transform: scale(0.98); }
         .rules-banner { background: rgba(255, 45, 85, 0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 10px; margin-bottom: 15px; font-size: 11px; color: #ff90a6; line-height: 1.4; text-align: center; }
         .container { padding: 15px; padding-bottom: 100px; }
-        h2 { font-size: 18px; color: var(--blue); margin-bottom: 5px; text-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+        h2 { font-size: 18px; color: var(--blue); margin-bottom: 10px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
         .card-item { background: var(--card); border: 1px solid #2d2144; padding: 18px 10px; border-radius: 14px; text-align: center; transition: 0.2s; font-weight: 600; font-size: 13px; cursor: pointer; }
-        .card-item:active { border-color: var(--accent); transform: scale(0.97); }
+        .card-item:active { border-color: var(--accent); transform: scale(0.97); background: #1f1632; }
         .prod-card { background: var(--card); border-radius: 16px; border: 1px solid #2d2144; margin-bottom: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .prod-info { display: flex; flex-direction: column; gap: 4px; }
-        .prod-name { font-weight: bold; font-size: 14px; }
-        .prod-weight { font-size: 11px; color: var(--dim); }
-        .prod-price { color: var(--success); font-size: 16px; font-weight: 800; }
-        .btn-buy { background: var(--accent); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: bold; box-shadow: 0 0 10px rgba(157, 0, 255, 0.3); font-size: 12px; cursor: pointer; }
+        .prod-name { font-weight: bold; font-size: 15px; }
+        .prod-desc { font-size: 11px; color: var(--dim); }
+        .prod-price { color: var(--success); font-size: 18px; font-weight: 800; }
+        .btn-buy { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-buy:active { transform: scale(0.95); }
         .pay-window { background: #1f1632; border: 2px dashed var(--blue); padding: 20px; border-radius: 20px; text-align: center; }
-        .wallet { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2144; font-size: 15px; }
+        .wallet { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; color: var(--success); font-family: monospace; border: 1px solid #2d2144; font-size: 14px; word-break: break-all; }
         .review-card { background: var(--card); border: 1px solid #2d2144; border-radius: 16px; padding: 12px; margin-bottom: 12px; }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
         .review-user { font-weight: bold; color: var(--blue); font-size: 13px; }
-        .review-stars { color: #ffca28; font-size: 11px; }
-        .review-text { font-size: 12px; color: #e1def2; margin: 6px 0; line-height: 1.4; }
-        .review-img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 1px solid #2d2144; margin-top: 6px; background: #120d1a; }
-        .review-meta { font-size: 10px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 6px; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #140e22; display: flex; padding: 12px 0; border-top: 1px solid #2d2144; z-index: 1000; }
-        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; }
+        .review-stars { color: #ffca28; font-size: 12px; }
+        .review-text { font-size: 13px; color: #e1def2; margin: 8px 0; line-height: 1.4; }
+        .review-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid #2d2144; margin-top: 8px; background: #120d1a; }
+        .review-meta { font-size: 11px; color: var(--dim); display: flex; justify-content: space-between; margin-top: 8px; }
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #140e22; display: flex; padding: 10px 0; border-top: 1px solid #2d2144; z-index: 1000; }
+        .nav-link { flex: 1; text-align: center; color: var(--dim); font-size: 10px; cursor: pointer; transition: 0.2s; }
         .nav-link.active { color: var(--accent); }
-        .nav-link i { display: block; font-size: 18px; margin-bottom: 4px; }
+        .nav-link i { display: block; font-size: 20px; margin-bottom: 4px; }
         .hidden { display: none; }
+        .back-btn { background: none; color: var(--blue); border: none; margin-bottom: 15px; font-weight: bold; padding: 8px 0; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .loading { text-align: center; padding: 20px; color: var(--dim); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading i { animation: pulse 1s infinite; }
     </style>
 </head>
 <body>
@@ -46,116 +53,150 @@
     
     <div class="container">
         <div class="rules-banner">
-            ⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Пишете не по делу — БАН!<br> Запрос реквизитов более 3-х раз — БАН!
+            ⚠️ <b>ПРАВИЛА МАГАЗИНА:</b> Не пишите не по делу — БАН! Запрос реквизитов более 3-х раз — БАН!
         </div>
 
         <div id="shop-view">
-            <div id="step-1"><h2>📍 ВЫБЕРИТЕ ГОРОД</h2><p style="color:var(--dim); font-size:11px;">Доступные локации:</p><div class="grid" id="city-list"></div></div>
-            <div id="step-2" class="hidden"><button onclick="goBack(1)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К городам</button><h2 id="t-city"></h2><div class="grid" id="dist-list"></div></div>
-            <div id="step-3" class="hidden"><button onclick="goBack(2)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К районам</button><h2 id="t-dist"></h2><div id="prod-list" style="margin-top: 12px;"></div></div>
-            <div id="step-4" class="hidden">
-                <button onclick="goBack(3)" style="background:none; color:var(--blue); border:none; margin-bottom:10px; font-weight:bold; padding:0; cursor:pointer;">← К товарам</button>
-                <div class="pay-window"><h3>ОПЛАТА ЗАКАЗА</h3><p id="pay-name" style="font-size:13px; margin: 10px 0;"></p><div class="prod-price" id="pay-sum"></div><div class="wallet">4400 1234 5678 9012</div><p style="font-size:11px; color:var(--dim)">Переведите точную сумму на карту и нажмите кнопку ниже</p></div>
-                <button class="btn-op" style="margin-top:20px; background:var(--success); color:black; box-shadow: 0 0 15px rgba(0,255,163,0.3);" onclick="finish()">Я ОПЛАТИЛ</button>
+            <div id="step-1">
+                <h2>📍 ВЫБЕРИТЕ ГОРОД</h2>
+                <p style="color:var(--dim); font-size:12px;">Доступные локации:</p>
+                <div class="grid" id="city-list"><div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div></div>
             </div>
-        </div>
-
-        <div id="prof-view" class="hidden">
-            <h2>МОЙ АККАУНТ</h2>
-            <div class="prod-card" style="padding: 20px; flex-direction: column; align-items: stretch;">
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                    <div style="background:#26183a; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--accent)">
-                        <i class="fa fa-user-ninja" style="color:var(--accent); font-size:20px;"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div>
-                        <div style="font-size:12px; color:var(--success);">● Царство Аида Премиум</div>
-                    </div>
+            <div id="step-2" class="hidden">
+                <button class="back-btn" onclick="goBack(1)"><i class="fas fa-arrow-left"></i> К городам</button>
+                <h2 id="t-city"></h2>
+                <div class="grid" id="dist-list"></div>
+            </div>
+            <div id="step-3" class="hidden">
+                <button class="back-btn" onclick="goBack(2)"><i class="fas fa-arrow-left"></i> К районам</button>
+                <h2 id="t-dist"></h2>
+                <div id="prod-list"></div>
+            </div>
+            <div id="step-4" class="hidden">
+                <button class="back-btn" onclick="goBack(3)"><i class="fas fa-arrow-left"></i> К товарам</button>
+                <div class="pay-window">
+                    <h3>💸 ОПЛАТА ЗАКАЗА</h3>
+                    <p id="pay-name" style="font-size:14px; margin: 10px 0;"></p>
+                    <div class="prod-price" id="pay-sum"></div>
+                    <div class="wallet">4400 1234 5678 9012</div>
+                    <p style="font-size:11px; color:var(--dim)">Переведите точную сумму и нажмите кнопку ниже</p>
                 </div>
-                <hr style="border:none; border-top:1px solid #2d2144; margin:15px 0;">
-                <p style="margin:8px 0; font-size:13px;">🆔 <b>ID Профиля:</b> <span id="u-id" style="color:var(--blue)">Не определен</span></p>
-                <p style="margin:8px 0; font-size:13px;">💰 <b>Баланс:</b> <span style="color:var(--success)">0 ₸</span></p>
-                <p style="margin:8px 0; font-size:13px;">📦 <b>Покупок совершено:</b> 0 шт.</p>
+                <button class="btn-op" style="margin-top:20px; background:var(--success); color:black;" onclick="finishOrder()">✅ Я ОПЛАТИЛ</button>
             </div>
         </div>
 
         <div id="reviews-view" class="hidden">
-            <h2>ОТЗЫВЫ КЛИЕНТОВ</h2>
-            <p style="color:var(--dim); font-size:11px; margin-bottom:15px;">Реальные отзывы покупателей</p>
-            <div id="reviews-list"></div>
+            <h2>⭐ ОТЗЫВЫ КЛИЕНТОВ</h2>
+            <p style="color:var(--dim); font-size:12px; margin-bottom:15px;">Реальные отзывы покупателей</p>
+            <div id="reviews-list"><div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка отзывов...</div></div>
+        </div>
+
+        <div id="prof-view" class="hidden">
+            <h2>👤 МОЙ ПРОФИЛЬ</h2>
+            <div class="prod-card" style="padding: 20px; flex-direction: column; align-items: stretch;">
+                <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                    <div style="background:#26183a; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--accent)">
+                        <i class="fa fa-user-ninja" style="color:var(--accent); font-size:22px;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:bold; font-size:16px;" id="u-name">Покупатель</div>
+                        <div style="font-size:11px; color:var(--success);">● Царство Аида</div>
+                    </div>
+                </div>
+                <hr style="border:none; border-top:1px solid #2d2144; margin:15px 0;">
+                <p style="margin:8px 0; font-size:13px;">🆔 ID: <span id="u-id" style="color:var(--blue)">-</span></p>
+                <p style="margin:8px 0; font-size:13px;">💰 Баланс: <span style="color:var(--success)">0 ₸</span></p>
+                <p style="margin:8px 0; font-size:13px;">📦 Покупок: <span>0</span></p>
+            </div>
         </div>
     </div>
 
     <div class="nav">
-        <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-shuttle-space"></i>ВИТРИНА</div>
-        <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-comments"></i>ОТЗЫВЫ</div>
-        <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-id-card"></i>ПРОФИЛЬ</div>
+        <div class="nav-link active" onclick="switchView('shop', this)"><i class="fa fa-store"></i><span>ВИТРИНА</span></div>
+        <div class="nav-link" onclick="switchView('reviews', this)"><i class="fa fa-star"></i><span>ОТЗЫВЫ</span></div>
+        <div class="nav-link" onclick="switchView('prof', this)"><i class="fa fa-user"></i><span>ПРОФИЛЬ</span></div>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp; 
+        const API_BASE = 'https://aida-reviews.duckdns.org';
+        let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
         
+        let productsData = { cities: {} };
         let selectedCity = "";
         let selectedDistrict = "";
         let selectedProduct = null;
-        let currentUser = { id: null, username: null, firstName: null, lastName: null };
-
+        let currentUser = { id: null, username: null, firstName: null };
+        
+        // Получение данных пользователя
         try {
-            if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 let u = tg.initDataUnsafe.user;
                 currentUser.id = u.id;
                 currentUser.username = u.username || null;
                 currentUser.firstName = u.first_name || '';
-                currentUser.lastName = u.last_name || '';
-                document.getElementById('u-name').innerText = u.username ? '@' + u.username : (u.first_name + ' ' + (u.last_name || ''));
+                document.getElementById('u-name').innerText = u.username ? '@' + u.username : (u.first_name || 'Покупатель');
                 document.getElementById('u-id').innerText = u.id;
             } else {
-                // Фоллбек для тестов вне ТГ
                 currentUser.id = "anon_" + Math.floor(Math.random() * 100000);
+                document.getElementById('u-name').innerText = "Гость";
+                document.getElementById('u-id').innerText = currentUser.id;
             }
         } catch(e) { console.error(e); }
         
-        async function sendLogToBot(actionText) {
-            if (!actionText) return;
-            const logData = {
-                uid: currentUser.id || 'anon',
-                user: currentUser.username ? '@' + currentUser.username : (currentUser.firstName || 'Аноним'),
-                full_name: `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim(),
-                log: actionText,
-                timestamp: new Date().toISOString()
-            };
+        // Функции API
+        async function loadProductsFromServer() {
             try {
-                await fetch('https://aida-reviews.duckdns.org/api/log', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(logData)
-                });
-            } catch(e) { console.warn('⚠️ Ошибка лога:', e); }
+                const response = await fetch(`${API_BASE}/api/products`);
+                const data = await response.json();
+                if (data && data.cities) {
+                    productsData = data;
+                    renderCityList();
+                } else {
+                    useDefaultProducts();
+                }
+            } catch(e) {
+                console.error('Error loading products:', e);
+                useDefaultProducts();
+            }
         }
         
-        function openOperator() { 
-            sendLogToBot('📞 Нажал кнопку "ОПЕРАТОР"'); 
-            tg.openTelegramLink('https://t.me/krytex_kzz'); 
+        function useDefaultProducts() {
+            productsData = {
+                "cities": {
+                    "Алматы": {
+                        "districts": ["Медеуский", "Алмалинский", "Бостандыкский", "Ауэзовский"],
+                        "items": [
+                            {"name": "MEOW NEW CRYS", "price": 18000},
+                            {"name": "BIG MEOW", "price": 15000},
+                            {"name": "COCAINE", "price": 80000},
+                            {"name": "ECSTASY", "price": 20000}
+                        ]
+                    },
+                    "Астана": {
+                        "districts": ["Есильский", "Алматы", "Сарыарка", "Байконур"],
+                        "items": [
+                            {"name": "MEOW NEW CRYS", "price": 18000},
+                            {"name": "BIG MEOW", "price": 15000}
+                        ]
+                    }
+                }
+            };
+            renderCityList();
         }
         
-        const districtsData = {
-            "Астана": ["Есильский р-н", "Алматы р-н", "Сарыарка р-н", "Байконур р-н", "Нура р-н"],
-            "Алматы": ["Медеуский р-н", "Алмалинский р-н", "Бостандыкский р-н", "Ауэзовский р-н"],
-            "Актау": ["1-15 микрорайоны", "16-30 микрорайоны", "Прибрежный р-н"]
-        };
-        
-        const productsData = {
-            "💎 MEOW NEW CRYS": "18.000 ₸",
-            "⚡ BIG MEOW": "15.000 ₸",
-            "❄️ COCAINE": "80.000 ₸",
-            "🔮 EXTAZY": "20.000 ₸"
-        };
-
-        function initShop() {
-            let container = document.getElementById('city-list');
+        function renderCityList() {
+            const container = document.getElementById('city-list');
             container.innerHTML = "";
-            Object.keys(districtsData).forEach(city => {
+            const cities = Object.keys(productsData.cities);
+            
+            if (cities.length === 0) {
+                container.innerHTML = "<p style='color:var(--dim);'>Нет доступных городов</p>";
+                return;
+            }
+            
+            cities.forEach(city => {
                 let div = document.createElement('div');
                 div.className = "card-item";
                 div.innerText = city;
@@ -163,17 +204,20 @@
                 container.appendChild(div);
             });
         }
-
+        
         function selectCity(city) {
             selectedCity = city;
-            sendLogToBot(`🏙 Выбрал город: ${city}`);
+            sendLog(`🏙 Выбрал город: ${city}`);
+            
             document.getElementById('step-1').classList.add('hidden');
             document.getElementById('step-2').classList.remove('hidden');
             document.getElementById('t-city').innerText = city.toUpperCase();
             
-            let container = document.getElementById('dist-list');
+            const container = document.getElementById('dist-list');
             container.innerHTML = "";
-            districtsData[city].forEach(dist => {
+            const districts = productsData.cities[city]?.districts || [];
+            
+            districts.forEach(dist => {
                 let div = document.createElement('div');
                 div.className = "card-item";
                 div.innerText = dist;
@@ -181,85 +225,153 @@
                 container.appendChild(div);
             });
         }
-
+        
         function selectDistrict(dist) {
             selectedDistrict = dist;
-            sendLogToBot(`📍 Выбрал район: ${dist} (Город: ${selectedCity})`);
+            sendLog(`📍 Выбрал район: ${dist}`);
+            
             document.getElementById('step-2').classList.add('hidden');
             document.getElementById('step-3').classList.remove('hidden');
-            document.getElementById('t-dist').innerText = dist.toUpperCase();
+            document.getElementById('t-dist').innerHTML = `${selectedCity} / ${dist}`;
             
-            let container = document.getElementById('prod-list');
+            const container = document.getElementById('prod-list');
             container.innerHTML = "";
-            Object.keys(productsData).forEach(pName => {
-                let price = productsData[pName];
+            const items = productsData.cities[selectedCity]?.items || [];
+            
+            items.forEach(item => {
                 let div = document.createElement('div');
                 div.className = "prod-card";
-                div.innerHTML = `<div class="prod-info"><span class="prod-name">${pName}</span><span class="prod-weight">⚖️ 1г</span><span class="prod-price">${price}</span></div><button class="btn-buy" onclick="checkout('${pName}', '${price}')">Купить</button>`;
+                div.innerHTML = `
+                    <div class="prod-info">
+                        <span class="prod-name">${item.name}</span>
+                        <span class="prod-desc">⚖️ 1 грамм</span>
+                        <span class="prod-price">${item.price.toLocaleString()} ₸</span>
+                    </div>
+                    <button class="btn-buy" onclick="checkout('${item.name.replace(/'/g, "\\'")}', ${item.price})">Купить</button>
+                `;
                 container.appendChild(div);
             });
         }
-
+        
         function checkout(pName, price) {
             selectedProduct = { name: pName, price: price };
-            sendLogToBot(`🛒 Перешел к оплате товара: ${pName} (${price})`);
+            sendLog(`🛒 Оформление заказа: ${pName} (${price} ₸)`);
+            
             document.getElementById('step-3').classList.add('hidden');
             document.getElementById('step-4').classList.remove('hidden');
-            document.getElementById('pay-name').innerText = `${pName} — ${selectedCity}, ${selectedDistrict}`;
-            document.getElementById('pay-sum').innerText = price;
+            document.getElementById('pay-name').innerHTML = `${pName}<br><span style="font-size:12px; color:var(--dim);">${selectedCity}, ${selectedDistrict}</span>`;
+            document.getElementById('pay-sum').innerHTML = `${price.toLocaleString()} ₸`;
         }
-
-        function finish() {
-            sendLogToBot(`💳 Нажал кнопку "Я ОПЛАТИЛ" для ${selectedProduct.name}`);
-            let dataStr = `DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.name}|${selectedProduct.price}`;
+        
+        function finishOrder() {
+            if (!selectedProduct) return;
+            
+            sendLog(`💳 Нажал "ОПЛАТИЛ" для ${selectedProduct.name}`);
+            const dataStr = `DONE|${selectedCity}|${selectedDistrict}|${selectedProduct.name}|${selectedProduct.price} ₸`;
             tg.sendData(dataStr);
             tg.close();
         }
-
+        
         function goBack(step) {
-            if(step === 1) {
+            if (step === 1) {
                 document.getElementById('step-2').classList.add('hidden');
                 document.getElementById('step-1').classList.remove('hidden');
-            } else if(step === 2) {
+            } else if (step === 2) {
                 document.getElementById('step-3').classList.add('hidden');
                 document.getElementById('step-2').classList.remove('hidden');
-            } else if(step === 3) {
+            } else if (step === 3) {
                 document.getElementById('step-4').classList.add('hidden');
                 document.getElementById('step-3').classList.remove('hidden');
             }
         }
-
+        
+        // Отзывы
+        async function loadReviews() {
+            const container = document.getElementById('reviews-list');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка отзывов...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/reviews`);
+                const data = await response.json();
+                container.innerHTML = "";
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = "<p style='color:var(--dim); text-align:center;'>⭐ Отзывов пока нет. Будьте первым!</p>";
+                    return;
+                }
+                
+                data.forEach(rev => {
+                    let div = document.createElement('div');
+                    div.className = "review-card";
+                    const stars = '⭐'.repeat(rev.s || 5);
+                    const reviewText = escapeHtml(rev.t || '');
+                    
+                    div.innerHTML = `
+                        <div class="review-header">
+                            <span class="review-user">👤 ${escapeHtml(rev.u || 'Покупатель')}</span>
+                            <span class="review-stars">${stars}</span>
+                        </div>
+                        <div class="review-text">${reviewText}</div>
+                        ${rev.i ? `<img src="${rev.i}" class="review-img" onerror="this.style.display='none'" loading="lazy">` : ''}
+                        <div class="review-meta">
+                            <span>📍 ${escapeHtml(rev.r || 'Не указано')}</span>
+                            <span>📅 ${rev.date || ''}</span>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch(e) {
+                console.error('Error loading reviews:', e);
+                container.innerHTML = "<p style='color:var(--danger); text-align:center;'>❌ Ошибка загрузки отзывов</p>";
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Логирование
+        async function sendLog(action) {
+            try {
+                await fetch(`${API_BASE}/api/log`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        log: action,
+                        ref: "organic",
+                        user: currentUser.username || currentUser.firstName || "Guest"
+                    })
+                });
+            } catch(e) { console.warn('Log error:', e); }
+        }
+        
+        function openOperator() {
+            sendLog('📞 Нажал кнопку оператора');
+            tg.openTelegramLink('https://t.me/krytex_kzz');
+        }
+        
         function switchView(view, elem) {
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             elem.classList.add('active');
+            
             document.getElementById('shop-view').classList.add('hidden');
-            document.getElementById('prof-view').classList.add('hidden');
             document.getElementById('reviews-view').classList.add('hidden');
-            document.getElementById(`${view}-view`).classList.remove('hidden');
-            if(view === 'reviews') loadReviews();
+            document.getElementById('prof-view').classList.add('hidden');
+            
+            if (view === 'shop') {
+                document.getElementById('shop-view').classList.remove('hidden');
+            } else if (view === 'reviews') {
+                document.getElementById('reviews-view').classList.remove('hidden');
+                loadReviews();
+            } else if (view === 'prof') {
+                document.getElementById('prof-view').classList.remove('hidden');
+            }
         }
-
-        function loadReviews() {
-            let container = document.getElementById('reviews-list');
-            container.innerHTML = "<p style='color:var(--dim); font-size:12px;'>Загрузка отзывов...</p>";
-            fetch('https://aida-reviews.duckdns.org/api/reviews')
-                .then(res => res.json())
-                .then(data => {
-                    container.innerHTML = "";
-                    if(!data || data.length === 0) { container.innerHTML = "<p style='color:var(--dim); font-size:12px;'>Отзывов пока нет.</p>"; return; }
-                    data.forEach(rev => {
-                        let div = document.createElement('div');
-                        div.className = "review-card";
-                        let reviewText = (rev.t || '').replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
-                        div.innerHTML = `<div class="review-header"><span class="review-user">👤 @${rev.u || 'Покупатель'}</span><span class="review-stars">⭐⭐⭐⭐⭐</span></div><div class="review-text">${reviewText}</div>${rev.i ? `<img src="${rev.i}" class="review-img" onerror="this.style.display='none'">` : ''}<div class="review-meta"><span>📍 ${rev.r || 'Не указано'}</span><span>🔒 Заказ проверен</span></div>`;
-                        container.appendChild(div);
-                    });
-                })
-                .catch(err => { container.innerHTML = "<p style='color:var(--danger); font-size:12px;'>Ошибка загрузки отзывов.</p>"; });
-        }
-
-        // Старт витрины
-        initShop();
+        
+        // Инициализация
+        loadProductsFromServer();
     </script>
 </body>
 </html>
